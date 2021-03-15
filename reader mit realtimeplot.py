@@ -48,7 +48,7 @@ class Reader(tk.Frame):
 		self.recording = False
 		
 	def plotonoff(self, plotstat):
-                if plotstat = False:
+                if plotstat == False:
                         plotstat = True
                         self.btn_plotonoff.config(state='plottet')
                 else:
@@ -76,30 +76,38 @@ class Reader(tk.Frame):
 	def reader(self, plotstat):
                 fig = plt.figure()
                 ax = fig.add_subplot(1, 1, 1)
-                
-		with serial.Serial(self.dev.get(), 115200, timeout=1) as s:
-			while self.recording:
-				try:
-					line = s.readline()
-					nonl = line.strip()
-					decoded = nonl.decode()
-					t, val = decoded.split()
-					val = float(val)
-					
-				except Exception as e:
-					print(e)
-					continue
+                with serial.Serial(self.dev.get(), 115200, timeout=1) as s:
+                        while self.recording:
+                                try:
+                                        line = s.readline()
+                                        nonl = line.strip()
+                                        decoded = nonl.decode()
+                                        t, val = decoded.split()
+                                        val = float(val)
+                                        t = int(t)
+                                        val_in_N = (val/91*1000)
+                                except Exception as e:
+                                        print(e)
+                                        continue
 
 				# -91 == 1kg load
-				self.data.append((int(t), (val / 91) * 1000))
+                                self.data.append(t, val_in_N)
 
-				self.samplecount['text'] = '%d samples' % len(self.data)
-				if plotstat = True:
+                                self.samplecount['text'] = '%d samples' % len(self.data)
+                                if plotstat == True:
+                                        def animate (t, val):
                                                 ax.clear()
-                                                ax.plot((int(t), (val / 91) * 1000))
+                                                ax.plot((int(t), val_in_N)
                                                 #noch referenzwert plotten
-##                                                ani = animation.FuncAnimation(fig, animate, fargs=(xs, ys), interval=1000) wohin???
-##                                                plt.show()
+                                                plt.xticks(rotation=45, ha='right') ##wird als invalid syntax angezeigt 
+                                                plt.subplots_adjust(bottom=0.30)
+                                                plt.title('Kraft-Zeit-Verlauf')
+                                                plt.ylabel('Kraft in N')
+                                                plt.legend()
+                                                plt.axis([1, None, 0, 1.1])
+                                                
+                                        ani = animation.FuncAnimation(fig, animate, fargs=(t, var), interval=1000) ##bis hier. 
+                                        plt.show()
 
 	
                                         
