@@ -9,10 +9,72 @@ class Analyse:
 
     def __init__(self, rawData):
 
-        self.threshold = 200
+        self.threshold = 1500
+        self.varLenght = 30
+        #self.varThresh = 0.3
         self.rawData = rawData
         self.cleanData = self.cleanUp()
+        self.peak = self.findPeak(self.cleanData)
+        self.plateau = self.findPlateau(self.cleanData)
 
+
+    def findPlateau(self, cleanData):
+
+        peakInd = np.argmax(cleanData[:,1])
+        varArr = np.zeros((peakInd, 2))
+        varArr[:,0] = cleanData[:peakInd,0]
+
+        for i in range(peakInd):
+            varArr[i,1] = np.var(cleanData[i:i+self.varLenght])
+        
+        minVar = np.min(varArr[:,1])
+        varThresh = minVar * 1.2
+      
+        varArr = varArr[varArr[:,1] < varThresh]
+
+        #If you want to merge similar points, you would do it here
+        #One could also compare hights of the last two plateus to be sure you didn't find the dip at the end
+
+        plateauTime = varArr[-1,0]
+        plateauInd = self.findNewIndex(plateauTime)
+        plateauValue = cleanData[plateauInd][1]
+
+        return (plateauTime, plateauValue)
+    
+    def findPeak(self, cleanData):
+        """
+        Finds highest peak
+        param: clean data
+        return: Tuple (time, value)
+        """
+        peakInd = np.argmax(cleanData[:,1])
+        peakTime = cleanData[peakInd, 0]
+        peakValue = cleanData[peakInd, 1]
+
+        return (peakTime, peakValue)
+
+    def findOldIndex(self, timestamp):
+        """
+        param: time position i want to find
+        return: index of timestamp on _original_ array
+        """
+        indexArr = np.where(self.rawData[:,0] == timestamp)[0]
+
+        assert indexArr.size == 1, "timestamp not unique Analyse.findOldIndex()"
+
+        return indexArr[0]
+    
+    def findNewIndex(self, timestamp):
+        """
+        param: time position i want to find
+        return: index of timestamp on _cleand_ array
+        """
+        indexArr = np.where(self.cleanData[:,0] == timestamp)[0]
+
+        assert indexArr.size == 1, "timestamp not unique Analyse.findNewIndex()"
+
+        return indexArr[0]
+    
     def cleanUp(self):
         """
         Cleans up data.
@@ -73,10 +135,12 @@ class Analyse:
         return positivData[positivData[:,1] > self.threshold,:]
     
 if '__main__' == __name__:
-    rawData = np.loadtxt("./out")
+    rawData = np.loadtxt("./ref")
     analyse = Analyse(rawData)
 
     plt.plot(analyse.cleanData[:,0], analyse.cleanData[:,1])
+    plt.plot(*analyse.peak, "x")
+    plt.plot(*analyse.plateau, "+")
     plt.show()
 
     
