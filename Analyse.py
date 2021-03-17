@@ -9,8 +9,8 @@ class Analyse:
 
     def __init__(self, rawData):
 
-        self.threshold = 1500
-        self.varLenght = 30
+        self.threshold = 200
+        self.varLenght = 10
         #self.varThresh = 0.3
         self.rawData = rawData
         self.cleanData = self.cleanUp()
@@ -25,12 +25,15 @@ class Analyse:
         varArr[:,0] = cleanData[:peakInd,0]
 
         for i in range(peakInd):
-            varArr[i,1] = np.var(cleanData[i:i+self.varLenght])
+            varArr[i,1] = np.var(cleanData[i:i+self.varLenght,1])
         
+        self.varArrayunreduziert = varArr
+
         minVar = np.min(varArr[:,1])
         varThresh = minVar * 1.2
       
         varArr = varArr[varArr[:,1] < varThresh]
+        
 
         #If you want to merge similar points, you would do it here
         #One could also compare hights of the last two plateus to be sure you didn't find the dip at the end
@@ -138,9 +141,13 @@ if '__main__' == __name__:
     rawData = np.loadtxt("./ref")
     analyse = Analyse(rawData)
 
-    plt.plot(analyse.cleanData[:,0], analyse.cleanData[:,1])
-    plt.plot(*analyse.peak, "x")
-    plt.plot(*analyse.plateau, "+")
+    fig = plt.figure()
+    ax1 = fig.add_subplot('121')
+    ax2 = fig.add_subplot('122')
+    ax1.plot(analyse.cleanData[:,0], analyse.cleanData[:,1])
+    ax2.plot(analyse.varArrayunreduziert[:,0], analyse.varArrayunreduziert[:,1], "r")
+    ax1.plot(*analyse.peak, "x")
+    ax1.plot(*analyse.plateau, "+")
     plt.show()
 
     
