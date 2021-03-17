@@ -1,4 +1,5 @@
 import numpy as np
+from matplotlib import pyplot as plt
 
 class Analyse:
     """
@@ -70,4 +71,13 @@ class Analyse:
         """
 
         return positivData[positivData[:,1] > self.threshold,:]
+    
+if '__main__' == __name__:
+    rawData = np.loadtxt("./out")
+    analyse = Analyse(rawData)
+
+    plt.plot(analyse.cleanData[:,0], analyse.cleanData[:,1])
+    plt.show()
+
+    
 
