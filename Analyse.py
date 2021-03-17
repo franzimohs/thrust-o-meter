@@ -25,7 +25,7 @@ class Analyse:
         oldIndexPeak = self.findOldIndex(self.peak[0])
         self.peakCorrect = (oldIndexPeak, self.rawDataBackUp[oldIndexPeak, 0], self.rawDataBackUp[oldIndexPeak, 1])
 
-        oldIndexPlateau = self.findNewIndex(self.plateau[0])
+        oldIndexPlateau = self.findOldIndex(self.plateau[0])
         self.plateauCorrect = (oldIndexPlateau, self.rawDataBackUp[oldIndexPlateau, 0], self.rawDataBackUp[oldIndexPlateau, 1])
 
         print(f"geschobener Peak: {self.peak}")
@@ -168,14 +168,19 @@ if '__main__' == __name__:
     analyse = Analyse(rawData)
 
     fig = plt.figure()
-    ax1 = fig.add_subplot(121)
-    ax1.set_title("Werte, Peak, Plateau")
-    ax2 = fig.add_subplot(122)
+    ax1 = fig.add_subplot(131)
+    ax1.set_title("Arbeitsdaten")
+    ax2 = fig.add_subplot(133)
     ax2.set_title("Varianzverlauf")
+    ax3 = fig.add_subplot(132)
+    ax3.set_title("Orginaldaten")
     ax1.plot(analyse.cleanData[:,0], analyse.cleanData[:,1])
-    ax2.plot(analyse.varArrayunreduziert[:,0], analyse.varArrayunreduziert[:,1], "r")
     ax1.plot(*analyse.peak, "x")
     ax1.plot([analyse.plateau[0], analyse.plateau[0]+analyse.varLenght], [analyse.plateau[1]]*2, "r-")
+    ax2.plot(analyse.varArrayunreduziert[:,0], analyse.varArrayunreduziert[:,1], "r")
+    ax3.plot(analyse.rawDataBackUp[:,0], analyse.rawDataBackUp[:,1])
+    ax3.plot(analyse.peakCorrect[1], analyse.peakCorrect[2], "x")
+    ax3.plot([analyse.plateauCorrect[1], analyse.plateauCorrect[1]+analyse.varLenght], [analyse.plateauCorrect[2]]*2, "r-")
     plt.show()
 
     
