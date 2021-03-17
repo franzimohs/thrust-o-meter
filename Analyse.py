@@ -9,18 +9,23 @@ class Analyse:
 
     def __init__(self, rawData):
 
-        self.peakIsNegativ = True
-        self.sliceCount = 0
-        self.threshold = 200
-        self.varLenght = 20
-        #self.varThresh = 0.3
-        self.rawData = rawData
-        self.cleanData = self.cleanUp()
-        self.peak = self.findPeak(self.cleanData)
-        self.plateau = self.findPlateau(self.cleanData)
+        self.peakIsNegativ = True                         #Falls ihr die Daten irgendwann umdreht, sodass der Peak nicht nach unten ausschlägt: Setzt das hier auf False
+        self.sliceCount = 0                               #Hier wird mitgezählt wie oft ich den Datensatz zugeschnitten habe, damit ich in keiner Reckrsivendlosschleife ende
+        self.threshold = 200                              #So hoch müssen die Werte mindestsns sein, damit sie relevant sind (kann natürlich bei Bedarf angepasst werden)
+        self.varLenght = 20                               #Auf diese Länge wird jeweils die Varianz berechnet. Mein Tipp: Falls das Plateau für eine Mindestdauer gehalten werden muss, würde ich hier ca die Hälfte dieser Zeit eintragen.
+        #self.varThresh = 0.3                             #Die tolerierte Varianz berechne ich inzwischen relativ zum Datensatz, aber hier könnte man einen festen Wert einsetzen, wenn man will.
+        self.rawData = rawData                            #Das ist das Array, das in den Konstruktor übergeben werden muss. Ich hab das an den bestehenden Datensätzen orientiert.
+        self.cleanData = self.cleanUp()                   #Die Daten werden validiert, gespiegelt, nach oben geschoben und getrimmt.
+        self.peak = self.findPeak(self.cleanData)         #Der Peak wird berechnet und als Tupel von Timestamp und Wert angegeben
+        self.plateau = self.findPlateau(self.cleanData)   #Der Anfangspunkt des Plateaus wird ebenfalls als Tupel angegeben (timestamp, value)
 
 
     def findPlateau(self, cleanData):
+        """
+        Finds last plateau befor peak.
+        param: clean Data
+        return: Coordinates of plateau (timestamp, value)
+        """
 
         peakInd = np.argmax(cleanData[:,1])
         varArr = np.zeros((peakInd, 2))
@@ -124,7 +129,6 @@ class Analyse:
         if necessary. Also lowest point is now 0.
         """
         
-        avr = np.mean(rawData[:,1])
         positivData = rawData
 
         if self.peakIsNegativ:
