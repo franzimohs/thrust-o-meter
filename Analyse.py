@@ -9,8 +9,10 @@ class Analyse:
 
     def __init__(self, rawData):
 
+        self.peakIsNegativ = True
+        self.sliceCount = 0
         self.threshold = 200
-        self.varLenght = 10
+        self.varLenght = 20
         #self.varThresh = 0.3
         self.rawData = rawData
         self.cleanData = self.cleanUp()
@@ -30,7 +32,7 @@ class Analyse:
         self.varArrayunreduziert = varArr
 
         minVar = np.min(varArr[:,1])
-        varThresh = minVar * 1.2
+        varThresh = minVar * 2.5
       
         varArr = varArr[varArr[:,1] < varThresh]
         
@@ -86,7 +88,7 @@ class Analyse:
         3. Remove excess data
         return: Remaining interesting stuff after inverting and trimming.
         """
-        if not self.checkTime(self.rawData):
+        if not self.checkTime():
             raise ValueError("data corrupted (Analyse.cleanUp())")
 
         cleanData = self.invertValues(self.rawData)
@@ -94,7 +96,7 @@ class Analyse:
 
         return cleanData
 
-    def checkTime(self, rawData):
+    def checkTime(self):
         """
         Validates data. Timestamps need to be regular to ensure reliable data.
         Reference value (ie 0.3) may need to be evaluated and adjusted, when more datasets are available.
@@ -102,11 +104,17 @@ class Analyse:
         return True If timestamps show low variance
                False If data contains holes or other irregularities
         """
-        var = np.var(rawData[1:,0] - rawData[:-1,0])
+        var = np.var(self.rawData[1:,0] - self.rawData[:-1,0])
 
         if var > 0.3:
-            print("data corrupted (Analyse.checkTime())")
-            return False
+            print("data corrupted. I will try again with ends cut off (Analyse.checkTime())")
+            if self.sliceCount >= 5:
+                self.sliceCount = 0
+                return False
+            
+            self.rawData = self.rawData[10:-10,:]
+            self.sliceCount += 1
+            return self.checkTime()
         
         return True
     
@@ -119,11 +127,11 @@ class Analyse:
         avr = np.mean(rawData[:,1])
         positivData = rawData
 
-        if avr <= 0:
+        if self.peakIsNegativ:
             positivData[:,1] = rawData[:,1] * -1
             
         
-        positivData[:,1] = positivData[:,1] + np.min(positivData[:,1])
+        positivData[:,1] = positivData[:,1] - np.min(positivData[:,1])
 
         return positivData
 
@@ -142,12 +150,14 @@ if '__main__' == __name__:
     analyse = Analyse(rawData)
 
     fig = plt.figure()
-    ax1 = fig.add_subplot('121')
-    ax2 = fig.add_subplot('122')
+    ax1 = fig.add_subplot(121)
+    ax1.set_title("Werte, Peak, Plateau")
+    ax2 = fig.add_subplot(122)
+    ax2.set_title("Varianzverlauf")
     ax1.plot(analyse.cleanData[:,0], analyse.cleanData[:,1])
     ax2.plot(analyse.varArrayunreduziert[:,0], analyse.varArrayunreduziert[:,1], "r")
     ax1.plot(*analyse.peak, "x")
-    ax1.plot(*analyse.plateau, "+")
+    ax1.plot([analyse.plateau[0], analyse.plateau[0]+analyse.varLenght], [analyse.plateau[1]]*2, "r-")
     plt.show()
 
     
