@@ -15,10 +15,24 @@ class Analyse:
         self.varLenght = 20                               #Auf diese Länge wird jeweils die Varianz berechnet. Mein Tipp: Falls das Plateau für eine Mindestdauer gehalten werden muss, würde ich hier ca die Hälfte dieser Zeit eintragen.
         #self.varThresh = 0.3                             #Die tolerierte Varianz berechne ich inzwischen relativ zum Datensatz, aber hier könnte man einen festen Wert einsetzen, wenn man will.
         self.rawData = rawData                            #Das ist das Array, das in den Konstruktor übergeben werden muss. Ich hab das an den bestehenden Datensätzen orientiert.
+        self.rawDataBackUp = rawData                      #Das brauche ich für den fall, dass ich die rawData zuschneiden muss, aber danach den orginalIndex wiederfinden will.
         self.cleanData = self.cleanUp()                   #Die Daten werden validiert, gespiegelt, nach oben geschoben und getrimmt.
-        self.peak = self.findPeak(self.cleanData)         #Der Peak wird berechnet und als Tupel von Timestamp und Wert angegeben
-        self.plateau = self.findPlateau(self.cleanData)   #Der Anfangspunkt des Plateaus wird ebenfalls als Tupel angegeben (timestamp, value)
+        self.peak = self.findPeak(self.cleanData)         #Der Peak wird berechnet und als Tupel von Timestamp und Wert angegeben. Der Kraftwert wird allerdings als meine geeichte Version zurückgegeben. Paar Zeilen weiter unten sind die Werte korrigiert.
+        self.plateau = self.findPlateau(self.cleanData)   #Der Anfangspunkt des Plateaus wird ebenfalls als Tupel angegeben (timestamp, force). Für den Kraftwert gilt das gleich wie für den Peak.
 
+        #Hier nochmal die Koordinaten des Peaks und des Plateaus mit ihren orginal Forcewerten:
+        #Zurückgegebn werden Tripel jeweils mit dem folgenden Aufbau: (Index, Timestamp, Force)
+        oldIndexPeak = self.findOldIndex(self.peak[0])
+        self.peakCorrect = (oldIndexPeak, self.rawDataBackUp[oldIndexPeak, 0], self.rawDataBackUp[oldIndexPeak, 1])
+
+        oldIndexPlateau = self.findNewIndex(self.plateau[0])
+        self.plateauCorrect = (oldIndexPlateau, self.rawDataBackUp[oldIndexPlateau, 0], self.rawDataBackUp[oldIndexPlateau, 1])
+
+        print(f"geschobener Peak: {self.peak}")
+        print(f"zurückgeschobener Peak: {self.peakCorrect}")
+
+        print(f"geschobenes Plateau: {self.plateau}")
+        print(f"zurückgeschobenes Plateau: {self.plateauCorrect}")
 
     def findPlateau(self, cleanData):
         """
@@ -68,7 +82,7 @@ class Analyse:
         param: time position i want to find
         return: index of timestamp on _original_ array
         """
-        indexArr = np.where(self.rawData[:,0] == timestamp)[0]
+        indexArr = np.where(self.rawDataBackUp[:,0] == timestamp)[0]
 
         assert indexArr.size == 1, "timestamp not unique Analyse.findOldIndex()"
 
