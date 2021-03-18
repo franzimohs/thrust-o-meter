@@ -197,7 +197,7 @@ class Analyse:
         return positivData[positivData[:,1] > self.threshold,:]
     
 if '__main__' == __name__:
-    rawData = np.loadtxt("./neu")
+    rawData = np.loadtxt("./ref")
     analyse = Analyse(rawData)
 
     fig = plt.figure()
