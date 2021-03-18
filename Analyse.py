@@ -5,6 +5,8 @@ class Analyse:
     """
     Contains all methods needed to analyse a given array containing timestamps and values.
     Needs to be initialized new for _every_ array.
+    Tip: Don't use the methods from outside. All relevant points are calculated in __init__
+    Only ask for already calculated results (ie analyse.peak, analyse.dent etc.)
     """
 
     def __init__(self, rawData):
@@ -19,26 +21,49 @@ class Analyse:
         self.cleanData = self.cleanUp()                   #Die Daten werden validiert, gespiegelt, nach oben geschoben und getrimmt.
         self.peak = self.findPeak(self.cleanData)         #Der Peak wird berechnet und als Tupel von Timestamp und Wert angegeben. Der Kraftwert wird allerdings als meine geeichte Version zurückgegeben. Paar Zeilen weiter unten sind die Werte korrigiert.
         self.plateau = self.findPlateau(self.cleanData)   #Der Anfangspunkt des Plateaus wird ebenfalls als Tupel angegeben (timestamp, force). Für den Kraftwert gilt das gleich wie für den Peak.
+        self.dent = self.findDent(self.cleanData)
+        self.slope = self.calculateSlope()
 
         #Hier nochmal die Koordinaten des Peaks und des Plateaus mit ihren orginal Forcewerten:
         #Zurückgegebn werden Tripel jeweils mit dem folgenden Aufbau: (Index, Timestamp, Force)
-        oldIndexPeak = self.findOldIndex(self.peak[0])
+        oldIndexPeak = self.findOldIndex(self.peak[1])
         self.peakCorrect = (oldIndexPeak, self.rawDataBackUp[oldIndexPeak, 0], self.rawDataBackUp[oldIndexPeak, 1])
 
-        oldIndexPlateau = self.findOldIndex(self.plateau[0])
+        oldIndexPlateau = self.findOldIndex(self.plateau[1])
         self.plateauCorrect = (oldIndexPlateau, self.rawDataBackUp[oldIndexPlateau, 0], self.rawDataBackUp[oldIndexPlateau, 1])
 
-        print(f"geschobener Peak: {self.peak}")
-        print(f"zurückgeschobener Peak: {self.peakCorrect}")
+        oldIndexDent = self.findOldIndex(self.dent[1])
+        self.dentCorrect = (oldIndexDent, self.rawDataBackUp[oldIndexDent, 0], self.rawDataBackUp[oldIndexDent, 1])
 
-        print(f"geschobenes Plateau: {self.plateau}")
-        print(f"zurückgeschobenes Plateau: {self.plateauCorrect}")
+        print(f"Arbeits-Plateau: {self.plateau}")
+        print(f"Arbeits-Dent: {self.dent}")
+        print(f"Arbeits-Peak: {self.peak}")
 
+        print(f"Orginal-Plateau: {self.plateauCorrect}")
+        print(f"Orginal-Peak: {self.peakCorrect}")
+
+    def calculateSlope(self):
+
+        deltaX = self.peak[1] - self.dent[1]
+        delteY = self.peak[2] - self.dent[2]
+        slope = delteY / deltaX
+
+        return slope
+    
+    def findDent(self, cleanData):
+
+        dentInd = np.argmin(cleanData[self.plateau[0]:self.peak[0],1])
+        dentInd = dentInd + self.plateau[0]
+        dentTime = cleanData[dentInd,0]
+        dentValue = cleanData[dentInd,1]
+
+        return (dentInd, dentTime, dentValue)
+    
     def findPlateau(self, cleanData):
         """
         Finds last plateau befor peak.
         param: clean Data
-        return: Coordinates of plateau (timestamp, value)
+        return: Coordinates of plateau (index, timestamp, value)
         """
 
         peakInd = np.argmax(cleanData[:,1])
@@ -63,19 +88,19 @@ class Analyse:
         plateauInd = self.findNewIndex(plateauTime)
         plateauValue = cleanData[plateauInd][1]
 
-        return (plateauTime, plateauValue)
+        return (plateauInd, plateauTime, plateauValue)
     
     def findPeak(self, cleanData):
         """
         Finds highest peak
         param: clean data
-        return: Tuple (time, value)
+        return: Tuple (index, time, value)
         """
         peakInd = np.argmax(cleanData[:,1])
         peakTime = cleanData[peakInd, 0]
         peakValue = cleanData[peakInd, 1]
 
-        return (peakTime, peakValue)
+        return (peakInd, peakTime, peakValue)
 
     def findOldIndex(self, timestamp):
         """
@@ -175,11 +200,13 @@ if '__main__' == __name__:
     ax3 = fig.add_subplot(132)
     ax3.set_title("Orginaldaten")
     ax1.plot(analyse.cleanData[:,0], analyse.cleanData[:,1])
-    ax1.plot(*analyse.peak, "x")
-    ax1.plot([analyse.plateau[0], analyse.plateau[0]+analyse.varLenght], [analyse.plateau[1]]*2, "r-")
+    ax1.plot(analyse.peak[1], analyse.peak[2], "rx")
+    ax1.plot(analyse.dent[1], analyse.dent[2], "rx")
+    ax1.plot([analyse.plateau[1], analyse.plateau[1]+analyse.varLenght], [analyse.plateau[2]]*2, "r-")
     ax2.plot(analyse.varArrayunreduziert[:,0], analyse.varArrayunreduziert[:,1], "r")
     ax3.plot(analyse.rawDataBackUp[:,0], analyse.rawDataBackUp[:,1])
-    ax3.plot(analyse.peakCorrect[1], analyse.peakCorrect[2], "x")
+    ax3.plot(analyse.peakCorrect[1], analyse.peakCorrect[2], "rx")
+    ax3.plot(analyse.dentCorrect[1], analyse.dentCorrect[2], "rx")
     ax3.plot([analyse.plateauCorrect[1], analyse.plateauCorrect[1]+analyse.varLenght], [analyse.plateauCorrect[2]]*2, "r-")
     plt.show()
 
