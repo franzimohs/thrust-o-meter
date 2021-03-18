@@ -19,12 +19,12 @@ class Analyse:
         self.rawData = rawData                            #Das ist das Array, das in den Konstruktor übergeben werden muss. Ich hab das an den bestehenden Datensätzen orientiert.
         self.rawDataBackUp = rawData                      #Das brauche ich für den fall, dass ich die rawData zuschneiden muss, aber danach den orginalIndex wiederfinden will.
         self.cleanData = self.cleanUp()                   #Die Daten werden validiert, gespiegelt, nach oben geschoben und getrimmt.
-        self.peak = self.findPeak(self.cleanData)         #Der Peak wird berechnet und als Tupel von Timestamp und Wert angegeben. Der Kraftwert wird allerdings als meine geeichte Version zurückgegeben. Paar Zeilen weiter unten sind die Werte korrigiert.
-        self.plateau = self.findPlateau(self.cleanData)   #Der Anfangspunkt des Plateaus wird ebenfalls als Tupel angegeben (timestamp, force). Für den Kraftwert gilt das gleich wie für den Peak.
-        self.dent = self.findDent(self.cleanData)
-        self.slope = self.calculateSlope()
+        self.peak = self.findPeak(self.cleanData)         #Der Peak wird berechnet und als Tupel von Index, Timestamp und Wert angegeben. Der Kraftwert wird allerdings als meine geeichte Version zurückgegeben. Paar Zeilen weiter unten sind die Werte korrigiert.
+        self.plateau = self.findPlateau(self.cleanData)   #Der Anfangspunkt des Plateaus wird ebenfalls als Tupel angegeben (index, timestamp, force). Für den Kraftwert gilt das gleich wie für den Peak.
+        self.dent = self.findDent(self.cleanData)         #Das hier ist die Delle zwischen Plateau und Peak
+        self.slope = self.calculateSlope()                #Das hier ist die Steigung zwischen Delle und Peak
 
-        #Hier nochmal die Koordinaten des Peaks und des Plateaus mit ihren orginal Forcewerten:
+        #Hier nochmal die Koordinaten von Peaks, Plateaus und Dent mit ihren orginal Index- und Forcewerten:
         #Zurückgegebn werden Tripel jeweils mit dem folgenden Aufbau: (Index, Timestamp, Force)
         oldIndexPeak = self.findOldIndex(self.peak[1])
         self.peakCorrect = (oldIndexPeak, self.rawDataBackUp[oldIndexPeak, 0], self.rawDataBackUp[oldIndexPeak, 1])
@@ -43,6 +43,10 @@ class Analyse:
         print(f"Orginal-Peak: {self.peakCorrect}")
 
     def calculateSlope(self):
+        """
+        Calculates Slope between dent and Peak
+        return: slope
+        """
 
         deltaX = self.peak[1] - self.dent[1]
         delteY = self.peak[2] - self.dent[2]
@@ -51,6 +55,10 @@ class Analyse:
         return slope
     
     def findDent(self, cleanData):
+        """
+        Finds lowest point between plateau and peak -> Dent
+        return: (index, timestamp, force value)
+        """
 
         dentInd = np.argmin(cleanData[self.plateau[0]:self.peak[0],1])
         dentInd = dentInd + self.plateau[0]
@@ -63,7 +71,7 @@ class Analyse:
         """
         Finds last plateau befor peak.
         param: clean Data
-        return: Coordinates of plateau (index, timestamp, value)
+        return: Coordinates of plateau (index, timestamp, force value)
         """
 
         peakInd = np.argmax(cleanData[:,1])
@@ -189,7 +197,7 @@ class Analyse:
         return positivData[positivData[:,1] > self.threshold,:]
     
 if '__main__' == __name__:
-    rawData = np.loadtxt("./ref")
+    rawData = np.loadtxt("./neu")
     analyse = Analyse(rawData)
 
     fig = plt.figure()
@@ -203,11 +211,20 @@ if '__main__' == __name__:
     ax1.plot(analyse.peak[1], analyse.peak[2], "rx")
     ax1.plot(analyse.dent[1], analyse.dent[2], "rx")
     ax1.plot([analyse.plateau[1], analyse.plateau[1]+analyse.varLenght], [analyse.plateau[2]]*2, "r-")
+    textX1 = analyse.cleanData[0,0]
+    textY1 = analyse.plateau[2] + ((analyse.peak[2] - analyse.plateau[2]) /2)
+    ax1.text(textX1, textY1, f"Plateau: {analyse.plateau[2]} \nDelle: {analyse.dent[2]} \nSpitze: {analyse.peak[2]} \nSteigung: {analyse.slope}")
+
     ax2.plot(analyse.varArrayunreduziert[:,0], analyse.varArrayunreduziert[:,1], "r")
+
     ax3.plot(analyse.rawDataBackUp[:,0], analyse.rawDataBackUp[:,1])
     ax3.plot(analyse.peakCorrect[1], analyse.peakCorrect[2], "rx")
     ax3.plot(analyse.dentCorrect[1], analyse.dentCorrect[2], "rx")
     ax3.plot([analyse.plateauCorrect[1], analyse.plateauCorrect[1]+analyse.varLenght], [analyse.plateauCorrect[2]]*2, "r-")
+    textX2 = np.min(analyse.rawDataBackUp[:,0])
+    textY2 = analyse.plateauCorrect[2] + ((analyse.peakCorrect[2] - analyse.plateauCorrect[2]) /2)
+    ax3.text(textX2, textY2, f"Plateau: {analyse.plateauCorrect[2]} \nDelle: {analyse.dentCorrect[2]} \nSpitze: {analyse.peakCorrect[2]} \nSteigung: {analyse.slope}")
+
     plt.show()
 
     
