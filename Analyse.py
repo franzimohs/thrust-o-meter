@@ -215,10 +215,13 @@ if '__main__' == __name__:
     ax2.set_title("Varianzverlauf")
     ax3 = fig.add_subplot(132)
     ax3.set_title("Orginaldaten")
+
     ax1.plot(analyse.cleanData[:,0], analyse.cleanData[:,1])
     ax1.plot(analyse.peak[1], analyse.peak[2], "rx")
     ax1.plot(analyse.dent[1], analyse.dent[2], "rx")
     ax1.plot([analyse.plateau[1], analyse.plateau[1]+analyse.varLenght], [analyse.plateau[2]]*2, "r-")
+    ax1.plot([analyse.dent[1]]*2, [analyse.dent[2], analyse.plateau[2]], "r-")
+
     textX1 = analyse.cleanData[0,0]
     textY1 = analyse.plateau[2] + ((analyse.peak[2] - analyse.plateau[2]) /2)
     ax1.text(textX1, textY1, f"Plateau: {analyse.plateau[2]} \nDelle: {analyse.dent[2]} \nSpannungsabfall: {analyse.dentDepth} \nSpitze: {analyse.peak[2]} \nSteigung: {analyse.slope}")
@@ -229,6 +232,8 @@ if '__main__' == __name__:
     ax3.plot(analyse.peakCorrect[1], analyse.peakCorrect[2], "rx")
     ax3.plot(analyse.dentCorrect[1], analyse.dentCorrect[2], "rx")
     ax3.plot([analyse.plateauCorrect[1], analyse.plateauCorrect[1]+analyse.varLenght], [analyse.plateauCorrect[2]]*2, "r-")
+    ax3.plot([analyse.dentCorrect[1]]*2, [analyse.dentCorrect[2], analyse.plateauCorrect[2]], "r-")
+
     textX2 = np.min(analyse.rawDataBackUp[:,0])
     textY2 = analyse.plateauCorrect[2] + ((analyse.peakCorrect[2] - analyse.plateauCorrect[2]) /2)
     ax3.text(textX2, textY2, f"Plateau: {analyse.plateauCorrect[2]} \nDelle: {analyse.dentCorrect[2]} \nSpannungsabfall: {analyse.dentDepth} \nSpitze: {analyse.peakCorrect[2]} \nSteigung: {analyse.slope}")
