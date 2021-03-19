@@ -17,12 +17,13 @@ class Analyse:
         self.varLenght = 20                               #Auf diese Länge wird jeweils die Varianz berechnet. Mein Tipp: Falls das Plateau für eine Mindestdauer gehalten werden muss, würde ich hier ca die Hälfte dieser Zeit eintragen.
         #self.varThresh = 0.3                             #Die tolerierte Varianz berechne ich inzwischen relativ zum Datensatz, aber hier könnte man einen festen Wert einsetzen, wenn man will.
         self.rawData = rawData                            #Das ist das Array, das in den Konstruktor übergeben werden muss. Ich hab das an den bestehenden Datensätzen orientiert.
-        self.rawDataBackUp = rawData                      #Das brauche ich für den fall, dass ich die rawData zuschneiden muss, aber danach den orginalIndex wiederfinden will.
+        self.rawDataBackUp = rawData.copy()               #Das brauche ich für den fall, dass ich die rawData zuschneiden muss, aber danach den orginalIndex wiederfinden will.
         self.cleanData = self.cleanUp()                   #Die Daten werden validiert, gespiegelt, nach oben geschoben und getrimmt.
         self.peak = self.findPeak(self.cleanData)         #Der Peak wird berechnet und als Tupel von Index, Timestamp und Wert angegeben. Der Kraftwert wird allerdings als meine geeichte Version zurückgegeben. Paar Zeilen weiter unten sind die Werte korrigiert.
         self.plateau = self.findPlateau(self.cleanData)   #Der Anfangspunkt des Plateaus wird ebenfalls als Tupel angegeben (index, timestamp, force). Für den Kraftwert gilt das gleich wie für den Peak.
         self.dent = self.findDent(self.cleanData)         #Das hier ist die Delle zwischen Plateau und Peak
         self.slope = self.calculateSlope()                #Das hier ist die Steigung zwischen Delle und Peak
+        self.dentDepth = self.calculateDentDepth()
 
         #Hier nochmal die Koordinaten von Peaks, Plateaus und Dent mit ihren orginal Index- und Forcewerten:
         #Zurückgegebn werden Tripel jeweils mit dem folgenden Aufbau: (Index, Timestamp, Force)
@@ -41,6 +42,13 @@ class Analyse:
 
         print(f"Orginal-Plateau: {self.plateauCorrect}")
         print(f"Orginal-Peak: {self.peakCorrect}")
+
+
+    def calculateDentDepth(self):
+        """
+        return: Difference between plateau hight and dent hight.
+        """
+        return self.plateau[2] - self.dent[2]
 
     def calculateSlope(self):
         """
@@ -213,7 +221,7 @@ if '__main__' == __name__:
     ax1.plot([analyse.plateau[1], analyse.plateau[1]+analyse.varLenght], [analyse.plateau[2]]*2, "r-")
     textX1 = analyse.cleanData[0,0]
     textY1 = analyse.plateau[2] + ((analyse.peak[2] - analyse.plateau[2]) /2)
-    ax1.text(textX1, textY1, f"Plateau: {analyse.plateau[2]} \nDelle: {analyse.dent[2]} \nSpitze: {analyse.peak[2]} \nSteigung: {analyse.slope}")
+    ax1.text(textX1, textY1, f"Plateau: {analyse.plateau[2]} \nDelle: {analyse.dent[2]} \nSpannungsabfall: {analyse.dentDepth} \nSpitze: {analyse.peak[2]} \nSteigung: {analyse.slope}")
 
     ax2.plot(analyse.varArrayunreduziert[:,0], analyse.varArrayunreduziert[:,1], "r")
 
@@ -223,7 +231,7 @@ if '__main__' == __name__:
     ax3.plot([analyse.plateauCorrect[1], analyse.plateauCorrect[1]+analyse.varLenght], [analyse.plateauCorrect[2]]*2, "r-")
     textX2 = np.min(analyse.rawDataBackUp[:,0])
     textY2 = analyse.plateauCorrect[2] + ((analyse.peakCorrect[2] - analyse.plateauCorrect[2]) /2)
-    ax3.text(textX2, textY2, f"Plateau: {analyse.plateauCorrect[2]} \nDelle: {analyse.dentCorrect[2]} \nSpitze: {analyse.peakCorrect[2]} \nSteigung: {analyse.slope}")
+    ax3.text(textX2, textY2, f"Plateau: {analyse.plateauCorrect[2]} \nDelle: {analyse.dentCorrect[2]} \nSpannungsabfall: {analyse.dentDepth} \nSpitze: {analyse.peakCorrect[2]} \nSteigung: {analyse.slope}")
 
     plt.show()
 
