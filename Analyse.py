@@ -23,7 +23,7 @@ class Analyse:
         self.plateau = self.findPlateau(self.cleanData)   #Der Anfangspunkt des Plateaus wird ebenfalls als Tupel angegeben (index, timestamp, force). Für den Kraftwert gilt das gleich wie für den Peak.
         self.dent = self.findDent(self.cleanData)         #Das hier ist die Delle zwischen Plateau und Peak
         self.slope = self.calculateSlope()                #Das hier ist die Steigung zwischen Delle und Peak
-        self.dentDepth = self.calculateDentDepth()
+        self.dentDepth = self.calculateDentDepth()        #Differenz zwischen Plateau und Delle
 
         #Hier nochmal die Koordinaten von Peaks, Plateaus und Dent mit ihren orginal Index- und Forcewerten:
         #Zurückgegebn werden Tripel jeweils mit dem folgenden Aufbau: (Index, Timestamp, Force)
@@ -36,12 +36,14 @@ class Analyse:
         oldIndexDent = self.findOldIndex(self.dent[1])
         self.dentCorrect = (oldIndexDent, self.rawDataBackUp[oldIndexDent, 0], self.rawDataBackUp[oldIndexDent, 1])
 
+        """
         print(f"Arbeits-Plateau: {self.plateau}")
         print(f"Arbeits-Dent: {self.dent}")
         print(f"Arbeits-Peak: {self.peak}")
 
         print(f"Orginal-Plateau: {self.plateauCorrect}")
         print(f"Orginal-Peak: {self.peakCorrect}")
+        """
 
 
     def calculateDentDepth(self):
@@ -57,8 +59,8 @@ class Analyse:
         """
 
         deltaX = self.peak[1] - self.dent[1]
-        delteY = self.peak[2] - self.dent[2]
-        slope = delteY / deltaX
+        deltaY = self.peak[2] - self.dent[2]
+        slope = deltaY / deltaX
 
         return slope
     
@@ -98,7 +100,7 @@ class Analyse:
         
 
         #If you want to merge similar points, you would do it here
-        #One could also compare hights of the last two plateus to be sure you didn't find the dip at the end
+        #One could also compare hights of the last two plateus to be sure you didn't find the dent, but I've never noticed to be an issue
 
         plateauTime = varArr[-1,0]
         plateauInd = self.findNewIndex(plateauTime)
