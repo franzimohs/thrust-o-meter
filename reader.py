@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import serial, threading
+import serial, threading, sys
 
 import numpy as np
 import tkinter as tk
@@ -21,10 +21,15 @@ class Reader(tk.Frame):
 		self.fname.pack(side='left')
 		self.fname.insert(0, 'out')
 
+		try:
+			port = sys.argv[1]
+		except Exception:
+			port = 'COM 3'
+
 		tk.Label(f, text='device').pack(side='left')
 		self.dev = tk.Entry(f)
 		self.dev.pack(side='left')
-		self.dev.insert(0, 'COM 3')
+		self.dev.insert(0, port)
 
 		self.samplecount = tk.Label(f, text='samples')
 		self.samplecount.pack(side='left')
