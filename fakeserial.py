@@ -16,40 +16,48 @@ class Fakeserial(tk.Frame):
 
 		f = tk.Frame(self)
 
-		tk.Button(f, text='push', command=self.push).pack(side='left')
-		self.status = tk.Label(f, text='init')
+		tk.Button(f, font=self.font, text='insert peak', command=self.new_peak).pack(side='left')
+		self.status = tk.Label(f, text='', font=self.font)
 		self.status.pack(side='left')
 
 		f.pack(fill=tk.BOTH, expand=True)
 
-	def push(self):
-		self.serial.push = True
+	def new_peak(self):
+		self.serial.new_peak = True
+		self.status['text'] = 'inserting peak starting at %d for %d samples' % (self.serial.index, self.serial.peaklen)
 
 class Serial():
 	def __init__(self, *void_args, **void_kwargs):
 		self.freq = void_kwargs.get('freq', 100)
+		master = void_kwargs.get('master')
 
-		self.peaklen = self.freq * 2  # seconds
+		self.peaklen = self.freq * 4  # seconds
 
-		self.push = False
+		self.new_peak = False
 		self.last = 0
 		self.index = 0
 		self.peak_x = -1
 		self.peak_y = -1
 
 		self.gui_died = False
-		self.guithread = threading.Thread(target=self.guithread, name='guithread', daemon=True)
-		self.guithread.start()
+		self.gui = None
+
+		if master is None:
+			self.guithread = threading.Thread(target=self.guithread, name='guithread', daemon=True)
+			self.guithread.start()
+		else:
+			self.gui = Fakeserial(self, master=master)
 
 	def peak_func(self, x):
-		return -(0.42*x)**2
+		return -(42*x/420)**2
 
 	def readline(self):
 		if self.gui_died:
 			raise Exception('fakeserial disconnected')
 
-		if self.push:
-			self.push = False
+		if self.new_peak:
+			self.new_peak = False
+			# remember start coords
 			self.peak_x = self.last + self.peak_func(-self.peaklen/2)
 			self.peak_y = self.index
 
@@ -62,7 +70,7 @@ class Serial():
 			self.last = -self.peak_func(x) + self.peak_x
 
 		delta = 42
-		val = self.last + random.randint(-delta, +delta)
+		val = self.last + random.randint(-delta, +delta) // 10
 		self.last = val
 		self.index += 1
 
@@ -73,8 +81,8 @@ class Serial():
 
 	def guithread(self):
 		root = tk.Tk()
-		gui = Fakeserial(self, master=root)
-		gui.mainloop()
+		self.gui = Fakeserial(self, master=root)
+		self.gui.mainloop()
 
 		self.gui_died = True
 
@@ -82,12 +90,14 @@ class Serial():
 		return self
 
 	def __exit__(self, *void_args):
-		pass
+		if self.gui is not None:
+			self.gui.destroy()
 
 if '__main__' == __name__:
 	try:
 		with Serial('/dev/fake', 9600, timeout=1) as s:
+			f = open('out', 'w')
 			while True:
-				print('\r', len(s.readline().decode()), end='\r')
+				print(s.readline().decode().strip(), file=f)
 	except KeyboardInterrupt:
 		print('')

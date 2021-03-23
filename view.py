@@ -28,7 +28,7 @@ class View(tk.Frame):
 		tk.Button(text='shift links', command=self.unshift).pack(side='left') #shift links = unshift
 		tk.Button(text='plot', command=self.plot).pack(side='left')
 		self.flag_update = tk.IntVar()
-		tk.Checkbutton(text='update plot after shift', var = self.flag_update).pack(side='left')
+		tk.Checkbutton(text='update plot after shift', var=self.flag_update).pack(side='left')
 		tk.Button(text='autoshift', command=self.autoshift).pack(side='left')
 
 		try:

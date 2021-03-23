@@ -14,10 +14,11 @@ class Reader(tk.Frame):
 
 		self.font = Font(family='monospace')
 
-		f = tk.Frame(self)
+		outer_frame = tk.Frame(self)
+		f = tk.Frame(outer_frame)
 
-		tk.Label(f, text='file name').pack(side='left')
-		self.fname = tk.Entry(f)
+		tk.Label(f, font=self.font, text='file name').pack(side='left')
+		self.fname = tk.Entry(f, font=self.font)
 		self.fname.pack(side='left')
 		self.fname.insert(0, 'out')
 
@@ -26,20 +27,25 @@ class Reader(tk.Frame):
 		except Exception:
 			port = 'COM 3'
 
-		tk.Label(f, text='device').pack(side='left')
-		self.dev = tk.Entry(f)
+		tk.Label(f, font=self.font, text='device').pack(side='left')
+		self.dev = tk.Entry(f, font=self.font)
 		self.dev.pack(side='left')
 		self.dev.insert(0, port)
 
-		self.samplecount = tk.Label(f, text='samples')
+		self.samplecount = tk.Label(f, font=self.font, text='samples')
 		self.samplecount.pack(side='left')
 
-		self.btn_start = tk.Button(f, text='start', command=self.start)
+		self.btn_start = tk.Button(f, font=self.font, text='start', command=self.start)
 		self.btn_start.pack(side='left')
-		self.btn_stop = tk.Button(f, text='stop&save', command=self.save, state='disabled')
+		self.btn_stop = tk.Button(f, font=self.font, text='stop&save', command=self.save, state='disabled')
 		self.btn_stop.pack(side='left')
 
-		f.pack(fill=tk.BOTH, expand=True)
+		f.pack()
+
+		self.frame_fakeserial = tk.Frame(outer_frame)
+		self.frame_fakeserial.pack(side='left')
+
+		outer_frame.pack(fill=tk.BOTH, expand=True)
 
 		self.data = []
 		self.recording = False
@@ -61,14 +67,16 @@ class Reader(tk.Frame):
 	def reader(self):
 		port = self.dev.get()
 
+		kwargs = {}
 		if 'fake' == port:
 			import fakeserial
+			kwargs['master'] = self.frame_fakeserial
 			serial_class = fakeserial
 		else:
 			import serial
 			serial_class = serial
 
-		with serial_class.Serial(self.dev.get(), 115200, timeout=1) as s:
+		with serial_class.Serial(self.dev.get(), 115200, timeout=1, **kwargs) as s:
 			while self.recording:
 				try:
 					line = s.readline()
