@@ -95,7 +95,7 @@ class View(tk.Frame):
 	def _shift(self, offset):
 		self.offset += offset
 
-		self.data[1] = np.concatenate((self.data[1][-offset:], self.data[1][:-offset]))
+		self.data[1][:,1] = np.concatenate((self.data[1][:,1][-offset:], self.data[1][:,1][:-offset]))
 
 		self.show()
 
