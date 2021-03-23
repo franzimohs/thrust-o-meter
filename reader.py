@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import serial, threading, sys
+import threading, sys
 
 import numpy as np
 import tkinter as tk
@@ -59,7 +59,16 @@ class Reader(tk.Frame):
 		self.samplecount['text'] = 'saved'
 
 	def reader(self):
-		with serial.Serial(self.dev.get(), 115200, timeout=1) as s:
+		port = self.dev.get()
+
+		if 'fake' == port:
+			import fakeserial
+			serial_class = fakeserial
+		else:
+			import serial
+			serial_class = serial
+
+		with serial_class.Serial(self.dev.get(), 115200, timeout=1) as s:
 			while self.recording:
 				try:
 					line = s.readline()
