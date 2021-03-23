@@ -28,10 +28,10 @@ class Fakeserial(tk.Frame):
 
 class Serial():
 	def __init__(self, *void_args, **void_kwargs):
-		self.freq = void_kwargs.get('freq', 100)
+		self.freq = void_kwargs.get('freq', 80)
 		master = void_kwargs.get('master')
 
-		self.peaklen = self.freq * 4  # seconds
+		self.peaklen = self.freq * 2  # seconds
 
 		self.new_peak = False
 		self.last = 0
@@ -49,7 +49,7 @@ class Serial():
 			self.gui = Fakeserial(self, master=master)
 
 	def peak_func(self, x):
-		return -(42*x/420)**2
+		return -(42*x/420*4.2)**2
 
 	def readline(self):
 		if self.gui_died:
