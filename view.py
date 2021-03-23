@@ -31,15 +31,20 @@ class View(tk.Frame):
 		tk.Checkbutton(text='update plot after shift', var = self.flag_update).pack(side='left')
 		tk.Button(text='autoshift', command=self.autoshift).pack(side='left')
 
+		try:
+			file_out, file_ref = sys.argv[1:3]
+		except Exception:
+			file_out, file_ref = 'out', 'ref'
+
 		tk.Label(f, text='out file').pack(side='left')
 		self.f_out = tk.Entry(f)
 		self.f_out.pack(side='left')
-		self.f_out.insert(0, 'out')
+		self.f_out.insert(0, file_out)
 
 		tk.Label(f, text='ref file').pack(side='left')
 		self.f_ref = tk.Entry(f)
 		self.f_ref.pack(side='left')
-		self.f_ref.insert(0, 'ref')
+		self.f_ref.insert(0, file_ref)
 
 		f.pack(fill=tk.BOTH, expand=True)
 
