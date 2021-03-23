@@ -4,6 +4,7 @@ import sys
 import numpy as np
 import tkinter as tk
 from tkinter.font import Font
+from matplotlib import pyplot
 
 class View(tk.Frame):
 	def __init__(self, master=None):
@@ -20,12 +21,16 @@ class View(tk.Frame):
 			self.plotters[i] = Plotter(f)
 			self.plotters[i].pack()
 
+		self.pyplot_line = None
+
 		tk.Button(text='load', command=self.load).pack(side='left')
 		tk.Button(text='shift rechts', command=self.shift).pack(side='left') #shift rechts = shift
 		tk.Button(text='shift links', command=self.unshift).pack(side='left') #shift links = unshift
 		tk.Button(text='plot', command=self.plot).pack(side='left')
+		self.flag_update = tk.IntVar()
+		tk.Checkbutton(text='update plot after shift', var = self.flag_update).pack(side='left')
 		tk.Button(text='autoshift', command=self.autoshift).pack(side='left')
-                
+
 		tk.Label(f, text='out file').pack(side='left')
 		self.f_out = tk.Entry(f)
 		self.f_out.pack(side='left')
@@ -53,6 +58,9 @@ class View(tk.Frame):
 		self.data[0] = self.data[0][:l] #bis zur kürzeren länge schneiden
 		self.data[1] = self.data[1][:l]
 
+		pyplot.close()
+		self.pyplot_line = None
+
 		self.show()
 
 	def show(self):
@@ -63,10 +71,12 @@ class View(tk.Frame):
 		#self.plotters[2].set(d, title='%s - %s' % tuple(sys.argv[1:3]))
 
 	def plot(self):
-		from matplotlib import pyplot as plt
 		d = self.data[0][:,1:] - self.data[1][:,1:] #alle spalten nach der 1. spalte erste [] welcher plot oben unten 2.[] welche spalte in datei
-		plt.plot(d)
-		plt.show()
+		if self.pyplot_line:
+			self.pyplot_line.set_ydata(d)
+		else:
+			self.pyplot_line, = pyplot.plot(d)
+		pyplot.show()
 
 	def shift(self):
 		return self._shift(1)
@@ -81,7 +91,6 @@ class View(tk.Frame):
 		ref_min_ind = np.argmin(ref)
 
 		return self._shift(out_min_ind-ref_min_ind)
-        
 
 	def _shift(self, offset):
 		self.offset += offset
@@ -89,6 +98,9 @@ class View(tk.Frame):
 		self.data[1] = np.concatenate((self.data[1][-offset:], self.data[1][:-offset]))
 
 		self.show()
+
+		if self.flag_update.get():
+			self.plot()
 
 class Cache():
 	def __init__(self, canvas, args, width):
