@@ -7,9 +7,9 @@ import serial
 
 #initialize serial port
 ser = serial.Serial()
-ser.port = '/dev/ttyACM0' #Arduino serial port
-ser.baudrate = 9600
-ser.timeout = 10 #specify timeout when using readline()
+ser.port = 'COM6' #Arduino serial port
+ser.baudrate = 115200
+ser.timeout = 1 #specify timeout when using readline()
 ser.open()
 if ser.is_open==True:
 	print("\nAll right, serial port now open. Configuration:\n")
@@ -27,15 +27,23 @@ def animate(i, xs, ys):
 
     #Aquire and parse data from serial port
     line=ser.readline()      #ascii
-    line_as_list = line.split(b',')
-    i = int(line_as_list[0])
-    relProb = line_as_list[1]
-    relProb_as_list = relProb.split(b'\n')
-    relProb_float = float(relProb_as_list[0])
+ #   line_as_list = line.split(b',')
+ #   print(line_as_list)
+ #   i = int(line_as_list[0])
+ #   relProb = line_as_list[1]
+ #   relProb_as_list = relProb.split(b'\n')
+ #   relProb_float = float(relProb_as_list[0])
+
+    
+    nonl = line.strip()
+    decoded = nonl.decode()
+    print(decoded)
+    t, val = decoded.split()
+    val = float(val)
 	
 	# Add x and y to lists
-    xs.append(i)
-    ys.append(relProb_float)
+    xs.append(int(t))
+    ys.append(val)
     rs.append(0.5)
 
     # Limit x and y lists to 20 items
