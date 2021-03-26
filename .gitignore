@@ -133,3 +133,6 @@ dmypy.json
 
 # vim swap files
 .*.sw[po]
+
+
+# Programm Ausgabe
