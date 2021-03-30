@@ -88,8 +88,8 @@ class Reader(tk.Frame):
 					print(e)
 					continue
 
-				# -91 == 1kg load
-				self.data.append((int(t), (val / 91) * 1000))
+				# -64 == 1kg load g= 9,81 F= m*g
+				self.data.append((int(t), (val/64*9.81)))
 
 				self.samplecount['text'] = '%d samples' % len(self.data)
 
