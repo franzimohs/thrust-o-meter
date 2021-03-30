@@ -43,8 +43,7 @@ class Serial():
 		self.gui = None
 
 		if master is None:
-			self.guithread = threading.Thread(target=self.guithread, name='guithread', daemon=True)
-			self.guithread.start()
+			threading.Thread(target=self.guithread, name='guithread', daemon=True).start()
 		else:
 			self.gui = Fakeserial(self, master=master)
 
