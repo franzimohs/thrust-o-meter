@@ -6,24 +6,21 @@
 * Daten als plot anzeigen
 * vergleichsplot anzeigen
 * Daten speichern
-* peakforce und vorspannungsforce anzeigen 
+* Analyse von Vorspannung, Peak, Inzisur und Steigung
 
 ## soll
 
-* sliden verhindern eichung
+* Eichung 
 * drei zwei eins vorspannung dü dü düüüü oder so 
-
+* Real Time Sound Darstellung
 * Real Time Ausgabe der Daten und des Vergleiches [FRANZI] (ein oder zwei fenster)
-
+* Lernfortschritt über relevante Parameter
 
 * Interface Skala einblenden?
-
-* Lernfortschritt in variabilität des eigenen Impulses
 * Peakforce verlauf [JOJO]
-* Breite impuls verlauf
 * vorspannungsvaribilität verlauf
 
-* Erkennen von Vorspannungsnachlass ???
+
 
 ### Benutzerfreundlichkeit
 
@@ -37,6 +34,3 @@
 * arduino programm
 * wägezelle und hx711
 
-## soll 
-
-* sound
