@@ -15,8 +15,8 @@ curve = p.plot()
 p.setYRange(0, 300, padding=0)
 #xdata = [0]
 #ydata = [0.0]
-xdata = deque([0], maxlen=10)
-ydata = deque([0.0], maxlen=10)
+xdata = deque([0], maxlen=100)
+ydata = deque([0.0], maxlen=100)
 raw=serial.Serial('COM6', 115200)
 
 
@@ -27,9 +27,9 @@ def update():
     if 0 == len(nonl): return
     decoded = nonl.decode()
     t, val = decoded.split()
-    val = float(-val)/64*9.81
+    val = float(val)/64*9.81
     xdata.append(int(t))
-    ydata.append(val) 
+    ydata.append((-1)*val) 
     curve.setData(xdata, ydata)
     app.processEvents()
 
