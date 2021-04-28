@@ -5,6 +5,7 @@ import threading, sys
 import numpy as np
 import tkinter as tk
 from tkinter.font import Font
+import datetime
 
 class Reader(tk.Frame):
 	def __init__(self, master=None):
@@ -20,7 +21,8 @@ class Reader(tk.Frame):
 		tk.Label(f, font=self.font, text='file name').pack(side='left')
 		self.fname = tk.Entry(f, font=self.font)
 		self.fname.pack(side='left')
-		self.fname.insert(0, 'out')
+		self.timeName = datetime.datetime.now()
+		self.fname.insert(0, self.timeName)
 
 		try:
 			port = sys.argv[1]
@@ -98,8 +100,11 @@ def main():
 	app = Reader(master=root)
 	app.mainloop()
 
-if '__main__' == __name__:
+def open_reader_from_main():
 	try:
 		main()
 	except KeyboardInterrupt:
 		pass
+
+if '__main__' == __name__:
+	open_reader_from_main()

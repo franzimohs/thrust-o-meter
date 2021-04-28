@@ -214,7 +214,7 @@ class Analyse:
 
 		return positivData[positivData[:,1] > self.threshold,:]
 
-if '__main__' == __name__:
+def open_analyse_from_main():
 	rawData = np.loadtxt("./ref")
 	analyse = Analyse(rawData)
 
@@ -250,5 +250,5 @@ if '__main__' == __name__:
 
 	plt.show()
 
-
-
+if '__main__' == __name__:
+	open_analyse_from_main()

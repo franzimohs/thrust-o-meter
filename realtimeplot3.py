@@ -79,9 +79,18 @@ class App(QtGui.QMainWindow):
         self.counter += 1
 
 
-if __name__ == '__main__':
-
+def main():
     app = QtGui.QApplication(sys.argv)
     thisapp = App()
     thisapp.show()
     sys.exit(app.exec_())
+
+def open_realtimeplot3_from_main():
+    try:
+        main()
+    except KeyboardInterrupt:
+        pass
+
+if __name__ == '__main__':
+    open_realtimeplot3_from_main()
+    
