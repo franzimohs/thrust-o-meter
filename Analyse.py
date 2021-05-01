@@ -13,7 +13,7 @@ class Analyse:
 
 		self.peakIsNegativ = True                         #Falls ihr die Daten irgendwann umdreht, sodass der Peak nicht nach unten ausschlägt: Setzt das hier auf False
 		self.sliceCount = 0                               #Hier wird mitgezählt wie oft ich den Datensatz zugeschnitten habe, damit ich in keiner Reckrsivendlosschleife ende
-		self.threshold = 200                              #So hoch müssen die Werte mindestsns sein, damit sie relevant sind (kann natürlich bei Bedarf angepasst werden)
+		self.threshold = 10                             #So hoch müssen die Werte mindestsns sein, damit sie relevant sind (kann natürlich bei Bedarf angepasst werden)
 		self.varLenght = 20                               #Auf diese Länge wird jeweils die Varianz berechnet. Mein Tipp: Falls das Plateau für eine Mindestdauer gehalten werden muss, würde ich hier ca die Hälfte dieser Zeit eintragen.
 		#self.varThresh = 0.3                             #Die tolerierte Varianz berechne ich inzwischen relativ zum Datensatz, aber hier könnte man einen festen Wert einsetzen, wenn man will.
 		self.rawData = rawData                            #Das ist das Array, das in den Konstruktor übergeben werden muss. Ich hab das an den bestehenden Datensätzen orientiert.
@@ -102,6 +102,10 @@ class Analyse:
 		self.varArrayunreduziert = varArr
 
 		minVar = np.min(varArr[:,1])
+
+		if minVar < 0.1:
+			minVar = 0.01
+
 		varThresh = minVar * 2.5
 
 		varArr = varArr[varArr[:,1] < varThresh]
