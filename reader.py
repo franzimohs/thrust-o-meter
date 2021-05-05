@@ -24,7 +24,7 @@ class Reader(tk.Frame):
 		self.timeName = datetime.datetime.now().strftime('%Y%m%d_%H%M%S%z')
 		self.fname.insert(0, self.timeName)
 		self.flag_update = tk.IntVar()
-		tk.Checkbutton(text='Rechts!', var=self.flag_update).pack(side='left').pack(side='left')
+		tk.Checkbutton(text='Rechts!', var=self.flag_update).pack(side='left')
 		
 		try:
 			port = sys.argv[1]
