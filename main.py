@@ -5,7 +5,7 @@ from Analyse import open_analyse_from_main
 from reader import open_reader_from_main
 from realtimeplot3 import open_realtimeplot3_from_main
 import subprocess
-import FlapPyBone.flappy as flappy
+from flappy import main as flappy
 
 def center(win):
     """
@@ -51,7 +51,7 @@ class ThrustOMeter:
             reader_btn.grid(row=1, column=1, sticky='w')
             realtimeplot_btn = tkinter.Button(window, text="REALTIMEPLOT!", bd='5', command=open_realtimeplot3_from_main)
             realtimeplot_btn.grid(row=2, column=1, sticky='w')
-            game_btn = tkinter.Button(window, text="SPIEL!", bd='5', command=lambda: exec(flappy))
+            game_btn = tkinter.Button(window, text="SPIEL!", bd='5', command=flappy)
             game_btn.grid(row=3, column=1, sticky='w')
             fortschritt_btn = tkinter.Button(window, text="FORTSCHRITT!", bd='5')
             fortschritt_btn.grid(row=4, column=1, sticky='w')
