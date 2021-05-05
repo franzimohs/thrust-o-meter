@@ -20,30 +20,25 @@ class App(QtGui.QMainWindow):
 
         self.label = QtGui.QLabel()
         self.mainbox.layout().addWidget(self.label)
-
-        #self.view = self.canvas.addViewBox()
-        #self.view.setAspectLocked(True)
-        # self.view.setRange(QtCore.QRectF(0,0, 100, 100))
         
 
-        #self.canvas.nextRow()
+        
+        
+
+      
         #  line plot
         self.otherplot = self.canvas.addPlot()
+        self.otherplot.addLine(y=360)
+        self.otherplot.setYRange(0,450)
+
         self.h2 = self.otherplot.plot(pen='y')
-        #self.h2.setYRange(0, 500, )
-       # self.raw = serial.Serial('COM6', 115200)
+        
+        
+       
+        self.raw = serial.Serial('COM6', 115200)
 
 
-        try:
-                from PIL import Image
-                # FIXME: image is sideways. let's call it a feature
-                img_data = np.array(Image.open('screenshot1.png'))
-                img = pg.ImageItem(img_data)
-                img.scale(0.1, 0.1)
-                img.setZValue(-100)
-                self.otherplot.addItem(img)
-        except Exception:
-                print('image loading failed')
+        
 
 
         #### Set Data  #####################
@@ -61,21 +56,22 @@ class App(QtGui.QMainWindow):
 
     def _update(self):
 
-        #line = self.raw.readline()
-       # nonl = line.strip()
-       # if 0 == len(nonl): return
-       # decoded = nonl.decode()
-       # try :
-      #      t, val = decoded.split()
-       # except: 
-       #     val = 1
+        line = self.raw.readline()
+        nonl = line.strip()
+        if 0 == len(nonl): return
+        decoded = nonl.decode()
+        try :
+            t, val1, val2 = decoded.split()
+        except: 
+            val1 = 1
 
-       
-       # self.ydata[:-1] = self.ydata[1:]
-       # self.ydata[-1] = -float(val)/64*9.81
-        self.ydata = [50.00]
+        
+        self.ydata[:-1] = self.ydata[1:]
+        self.ydata[-1] = -float(val1)/64*9.81
+        
         self.h2.setData(self.ydata)
-
+        
+    
         now = time.time()
         dt = (now-self.lastupdate)
         if dt <= 0:
