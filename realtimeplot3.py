@@ -28,8 +28,8 @@ class App(QtGui.QMainWindow):
       
         #  line plot
         self.otherplot = self.canvas.addPlot()
-        self.otherplot.addLine(y=360)
-        self.otherplot.setYRange(0,450)
+        self.otherplot.addLine(y=300)
+        self.otherplot.setYRange(0,400)
 
         self.h2 = self.otherplot.plot(pen='y')
         

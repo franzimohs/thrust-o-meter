@@ -144,10 +144,10 @@ def read_serial(val=-150):
         if 0 == len(nonl): return val
         try :
             decoded = nonl.decode()
-            t, val = decoded.split()
+            t, val1, val2 = decoded.split()
             faktor_benutzte_bildschirmhöhe =  700/362 #400N sollen maximal aufgezeichnet werden
     
-            val = (((float(val)/64*9.81) * faktor_benutzte_bildschirmhöhe)-140) #1kg=64 g=9,81 Bodenhöhe=200
+            val = (((float(val1)/64*9.81) * faktor_benutzte_bildschirmhöhe)-140) #1kg=64 g=9,81 Bodenhöhe=200
         except: 
             pass
     return val
