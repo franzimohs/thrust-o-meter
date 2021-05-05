@@ -11,7 +11,7 @@ class Reader(tk.Frame):
 	def __init__(self, master=None):
 		tk.Frame.__init__(self, master)
 		if hasattr(master, 'title'): master.title('reader')
-		# self.pack(fill=tk.BOTH, expand=True)
+		self.grid()
 
 		self.font = Font(family='monospace')
 
@@ -24,7 +24,7 @@ class Reader(tk.Frame):
 		self.timeName = datetime.datetime.now().strftime('%Y%m%d_%H%M%S%z')
 		self.fname.insert(0, self.timeName)
 		self.flag_update = tk.IntVar()
-		tk.Checkbutton(text='Rechts!', var=self.flag_update).grid(row = 0, column = 4)
+		tk.Checkbutton(f, text='Rechts!', var=self.flag_update).grid(row = 0, column = 4)
 		
 		try:
 			port = sys.argv[1]
@@ -49,7 +49,7 @@ class Reader(tk.Frame):
 		self.frame_fakeserial = tk.Frame(outer_frame)
 		self.frame_fakeserial.grid(row = 0, column = 8)
 
-		# outer_frame.pack(fill=tk.BOTH, expand=True)
+		outer_frame.grid()
 
 		self.data = []
 		self.recording = False
