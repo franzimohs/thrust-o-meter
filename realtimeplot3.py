@@ -21,14 +21,14 @@ class App(QtGui.QMainWindow):
         self.label = QtGui.QLabel()
         self.mainbox.layout().addWidget(self.label)
 
-        self.view = self.canvas.addViewBox()
-        self.view.setAspectLocked(True)
+        #self.view = self.canvas.addViewBox()
+        #self.view.setAspectLocked(True)
         # self.view.setRange(QtCore.QRectF(0,0, 100, 100))
         
 
         
 
-        self.canvas.nextRow()
+        #self.canvas.nextRow()
         #  line plot
         self.otherplot = self.canvas.addPlot()
         self.h2 = self.otherplot.plot(pen='y')
@@ -93,4 +93,3 @@ def open_realtimeplot3_from_main():
 
 if __name__ == '__main__':
     open_realtimeplot3_from_main()
-    
