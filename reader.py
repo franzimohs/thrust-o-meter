@@ -23,7 +23,9 @@ class Reader(tk.Frame):
 		self.fname.pack(side='left')
 		self.timeName = datetime.datetime.now().strftime('%Y%m%d_%H%M%S%z')
 		self.fname.insert(0, self.timeName)
-
+		self.flag_update = tk.IntVar()
+		tk.Checkbutton(text='Rechts!', var=self.flag_update).pack(side='left').pack(side='left')
+		
 		try:
 			port = sys.argv[1]
 		except Exception:
@@ -84,8 +86,11 @@ class Reader(tk.Frame):
 					line = s.readline()
 					nonl = line.strip()
 					decoded = nonl.decode()
-					t, val = decoded.split()
-					val = float(val)
+					t, val1, val2 = decoded.split()
+					if self.flag_update.get():
+						val = float(val1)
+					else: val = float(val2)
+				
 				except Exception as e:
 					print(e)
 					continue
