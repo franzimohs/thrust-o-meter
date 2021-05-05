@@ -23,7 +23,7 @@ class App(QtGui.QMainWindow):
 
         self.view = self.canvas.addViewBox()
         self.view.setAspectLocked(True)
-        self.view.setRange(QtCore.QRectF(0,0, 100, 100))
+        # self.view.setRange(QtCore.QRectF(0,0, 100, 100))
         
 
         
@@ -33,7 +33,7 @@ class App(QtGui.QMainWindow):
         self.otherplot = self.canvas.addPlot()
         self.h2 = self.otherplot.plot(pen='y')
         #self.h2.setYRange(0, 500, )
-        self.raw = serial.Serial('COM6', 115200)
+       # self.raw = serial.Serial('COM6', 115200)
 
 
         #### Set Data  #####################
@@ -51,19 +51,19 @@ class App(QtGui.QMainWindow):
 
     def _update(self):
 
-        line = self.raw.readline()
-        nonl = line.strip()
-        if 0 == len(nonl): return
-        decoded = nonl.decode()
-        try :
-           t, val = decoded.split()
-        except: 
-           val = 1
+        #line = self.raw.readline()
+       # nonl = line.strip()
+       # if 0 == len(nonl): return
+       # decoded = nonl.decode()
+       # try :
+      #      t, val = decoded.split()
+       # except: 
+       #     val = 1
 
        
-        self.ydata[:-1] = self.ydata[1:]
-        self.ydata[-1] = -float(val)/64*9.81
-        # self.ydata = [50.00]
+       # self.ydata[:-1] = self.ydata[1:]
+       # self.ydata[-1] = -float(val)/64*9.81
+        self.ydata = [50.00]
         self.h2.setData(self.ydata)
 
         now = time.time()

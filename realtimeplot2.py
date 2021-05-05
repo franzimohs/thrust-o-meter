@@ -18,20 +18,18 @@ p.setYRange(0, 300, padding=0)
 xdata = deque([0], maxlen=100)
 ydata = deque([0.0], maxlen=100)
 raw=serial.Serial('COM6', 115200)
-t = 0
+
 
 def update():
-    global curve, t
+    global curve
     line = raw.readline()
     nonl = line.strip()
     if 0 == len(nonl): return
     decoded = nonl.decode()
     t, val = decoded.split()
-    t = t + 1
-    val = 150
     val = float(val)/64*9.81
     xdata.append(int(t))
-    ydata.append(val) 
+    ydata.append((-1)*val) 
     curve.setData(xdata, ydata)
     app.processEvents()
 
@@ -45,7 +43,7 @@ def update_wrapper():
 timer = QtCore.QTimer()
 timer.timeout.connect(update_wrapper)
 
-timer.timeout.connect(update)
+#timer.timeout.connect(update)
 timer.start(0)
 
 if __name__ == '__main__':
