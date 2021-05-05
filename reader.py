@@ -21,7 +21,7 @@ class Reader(tk.Frame):
 		tk.Label(f, font=self.font, text='file name').pack(side='left')
 		self.fname = tk.Entry(f, font=self.font)
 		self.fname.pack(side='left')
-		self.timeName = datetime.datetime.now().isoformat()
+		self.timeName = datetime.datetime.now().strftime('%Y%m%d_%H%M%S%z')
 		self.fname.insert(0, self.timeName)
 
 		try:
