@@ -1,4 +1,5 @@
 import tkinter
+from tkinter import filedialog
 from Analyse import open_analyse_from_main
 from reader import open_reader_from_main
 from realtimeplot3 import open_realtimeplot3_from_main
@@ -24,18 +25,33 @@ def center(win):
 
 
 class ThrustOMeter:
+        def browsefunc(self):
+            self.filename = filedialog.askopenfilename()
+            self.pathlabel.config(text=self.filename)
+
         def __init__(self, window, window_title):
             self.window = window
             self.window.title(window_title)
-            self.window.geometry("700x350")
-            
-            analyse_btn = tkinter.Button(window, text="ANALYSE!", bd='5', command=open_analyse_from_main)
-            analyse_btn.pack()
-            reader_btn = tkinter.Button(window, text="READER!", bd='5', command=open_reader_from_main)
-            reader_btn.pack()
-            realtimeplot_btn = tkinter.Button(window, text="REALTIMEPLOT!", bd='5', command=open_realtimeplot3_from_main)
-            realtimeplot_btn.pack()
+            self.window.geometry("700x200")
 
+            
+            
+            self.pathlabel = tkinter.Label(window)
+            self.pathlabel.grid(row=0, column=0, sticky='e')
+
+            browsebutton = tkinter.Button(window, text="Browse", command=self.browsefunc)
+            browsebutton.grid(row=1, padx=121, column=0)
+
+            analyse_btn = tkinter.Button(window, text="ANALYSE!", bd='5', command=lambda: open_analyse_from_main(self.filename))
+            analyse_btn.grid(row=0, column=1, sticky='w' )
+            reader_btn = tkinter.Button(window, text="READER!", bd='5', command=open_reader_from_main)
+            reader_btn.grid(row=1, column=1, sticky='w')
+            realtimeplot_btn = tkinter.Button(window, text="REALTIMEPLOT!", bd='5', command=open_realtimeplot3_from_main)
+            realtimeplot_btn.grid(row=2, column=1, sticky='w')
+            game_btn = tkinter.Button(window, text="SPIEL!", bd='5')
+            game_btn.grid(row=3, column=1, sticky='w')
+            fortschritt_btn = tkinter.Button(window, text="FORTSCHRITT!", bd='5')
+            fortschritt_btn.grid(row=4, column=1, sticky='w')
             center(self.window)
             self.window.mainloop()           
 
