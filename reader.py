@@ -27,7 +27,7 @@ class Reader(tk.Frame):
 		try:
 			port = sys.argv[1]
 		except Exception:
-			port = 'COM 3'
+			port = 'COM6'
 
 		tk.Label(f, font=self.font, text='device').pack(side='left')
 		self.dev = tk.Entry(f, font=self.font)
