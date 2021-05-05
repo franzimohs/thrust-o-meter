@@ -26,14 +26,24 @@ class App(QtGui.QMainWindow):
         # self.view.setRange(QtCore.QRectF(0,0, 100, 100))
         
 
-        
-
         #self.canvas.nextRow()
         #  line plot
         self.otherplot = self.canvas.addPlot()
         self.h2 = self.otherplot.plot(pen='y')
         #self.h2.setYRange(0, 500, )
        # self.raw = serial.Serial('COM6', 115200)
+
+
+        try:
+                from PIL import Image
+                # FIXME: image is sideways. let's call it a feature
+                img_data = np.array(Image.open('screenshot1.png'))
+                img = pg.ImageItem(img_data)
+                img.scale(0.1, 0.1)
+                img.setZValue(-100)
+                self.otherplot.addItem(img)
+        except Exception:
+                print('image loading failed')
 
 
         #### Set Data  #####################
