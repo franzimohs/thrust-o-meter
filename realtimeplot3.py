@@ -12,11 +12,14 @@ class App(QtGui.QMainWindow):
 
         #### Create Gui Elements ###########
         self.mainbox = QtGui.QWidget()
+        self.radio = QtGui.QRadioButton()
+        self.radio.setText('Links!')
         self.setCentralWidget(self.mainbox)
         self.mainbox.setLayout(QtGui.QVBoxLayout())
-
+        
         self.canvas = pg.GraphicsLayoutWidget()
         self.mainbox.layout().addWidget(self.canvas)
+        self.mainbox.layout().addWidget(self.radio)
 
         self.label = QtGui.QLabel()
         self.mainbox.layout().addWidget(self.label)
@@ -64,10 +67,13 @@ class App(QtGui.QMainWindow):
             t, val1, val2 = decoded.split()
         except: 
             val1 = 1
+            val2 = 1
 
-        
+        if self.radio.isChecked():
+            val = val2
+        else: val = val1
         self.ydata[:-1] = self.ydata[1:]
-        self.ydata[-1] = -float(val1)/64*9.81
+        self.ydata[-1] = -float(val)/64*9.81
         
         self.h2.setData(self.ydata)
         
