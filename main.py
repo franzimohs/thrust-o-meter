@@ -28,8 +28,12 @@ class ThrustOMeter:
             self.window = window
             self.window.title(window_title)
             self.window.geometry("700x350")
-            
-            analyse_btn = tkinter.Button(window, text="ANALYSE!", bd='5', command=open_analyse_from_main)
+
+            self.font = tkinter.font.Font(family='monospace')
+            fname = tkinter.Entry(self.window, font=self.font)
+            fname.pack()
+
+            analyse_btn = tkinter.Button(window, text="ANALYSE!", bd='5', command=lambda: open_analyse_from_main("./" + fname.get()))
             analyse_btn.pack()
             reader_btn = tkinter.Button(window, text="READER!", bd='5', command=open_reader_from_main)
             reader_btn.pack()

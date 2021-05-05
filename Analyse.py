@@ -218,8 +218,8 @@ class Analyse:
 
 		return positivData[positivData[:,1] > self.threshold,:]
 
-def open_analyse_from_main():
-	rawData = np.loadtxt("./ref")
+def open_analyse_from_main(loadData):
+	rawData = np.loadtxt(loadData)
 	analyse = Analyse(rawData)
 
 	fig = plt.figure()
