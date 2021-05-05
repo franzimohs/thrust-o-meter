@@ -11,45 +11,45 @@ class Reader(tk.Frame):
 	def __init__(self, master=None):
 		tk.Frame.__init__(self, master)
 		if hasattr(master, 'title'): master.title('reader')
-		self.pack(fill=tk.BOTH, expand=True)
+		# self.pack(fill=tk.BOTH, expand=True)
 
 		self.font = Font(family='monospace')
 
 		outer_frame = tk.Frame(self)
 		f = tk.Frame(outer_frame)
 
-		tk.Label(f, font=self.font, text='file name').pack(side='left')
+		tk.Label(f, font=self.font, text='file name').grid(row = 0, column = 0)
 		self.fname = tk.Entry(f, font=self.font)
-		self.fname.pack(side='left')
+		self.fname.grid(row = 0, column = 1)
 		self.timeName = datetime.datetime.now().strftime('%Y%m%d_%H%M%S%z')
 		self.fname.insert(0, self.timeName)
 		self.flag_update = tk.IntVar()
-		tk.Checkbutton(text='Rechts!', var=self.flag_update).pack(side='left')
+		tk.Checkbutton(text='Rechts!', var=self.flag_update).grid(row = 0, column = 4)
 		
 		try:
 			port = sys.argv[1]
 		except Exception:
 			port = 'COM6'
 
-		tk.Label(f, font=self.font, text='device').pack(side='left')
+		tk.Label(f, font=self.font, text='device').grid(row = 0, column = 2)
 		self.dev = tk.Entry(f, font=self.font)
-		self.dev.pack(side='left')
+		self.dev.grid(row = 0, column = 3)
 		self.dev.insert(0, port)
 
 		self.samplecount = tk.Label(f, font=self.font, text='samples')
-		self.samplecount.pack(side='left')
+		self.samplecount.grid(row = 0, column = 5)
 
 		self.btn_start = tk.Button(f, font=self.font, text='start', command=self.start)
-		self.btn_start.pack(side='left')
+		self.btn_start.grid(row = 0, column = 6)
 		self.btn_stop = tk.Button(f, font=self.font, text='stop&save', command=self.save, state='disabled')
-		self.btn_stop.pack(side='left')
+		self.btn_stop.grid(row = 0, column = 7)
 
-		f.pack()
+		f.grid()
 
 		self.frame_fakeserial = tk.Frame(outer_frame)
-		self.frame_fakeserial.pack(side='left')
+		self.frame_fakeserial.grid(row = 0, column = 8)
 
-		outer_frame.pack(fill=tk.BOTH, expand=True)
+		# outer_frame.pack(fill=tk.BOTH, expand=True)
 
 		self.data = []
 		self.recording = False
