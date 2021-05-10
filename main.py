@@ -37,14 +37,15 @@ class ThrustOMeter:
             self.window.title(window_title)
             self.window.geometry("700x200")
 
-            
+        
             
             self.pathlabel = tkinter.Label(window)
             self.pathlabel.grid(row=0, column=0, sticky='e')
+            self.flag_game = tkinter.IntVar()
 
             browsebutton = tkinter.Button(window, text="Browse", command=self.browsefunc)
             browsebutton.grid(row=1, padx=121, column=0)
-
+            
             analyse_btn = tkinter.Button(window, text="ANALYSE!", bd='5', command=lambda: open_analyse_from_main(self.filename))
             analyse_btn.grid(row=0, column=1, sticky='w' )
             reader_btn = tkinter.Button(window, text="READER!", bd='5', command=open_reader_from_main)
@@ -53,6 +54,10 @@ class ThrustOMeter:
             realtimeplot_btn.grid(row=2, column=1, sticky='w')
             game_btn = tkinter.Button(window, text="SPIEL!", bd='5', command=flappy)
             game_btn.grid(row=3, column=1, sticky='w')
+            game_rdR = tkinter.Radiobutton(window, text= 'Rechts!', var = self.flag_game, value=True)
+            game_rdR.grid(row=3, column =2, sticky='w')
+            game_rdL = tkinter.Radiobutton(window, text = 'Links!', var = self.flag_game, value = False)
+            game_rdL.grid(row=3, column=3, sticky='w')
             fortschritt_btn = tkinter.Button(window, text="FORTSCHRITT!", bd='5')
             fortschritt_btn.grid(row=4, column=1, sticky='w')
             center(self.window)

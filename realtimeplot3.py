@@ -1,6 +1,7 @@
 import sys
 import time
 from pyqtgraph.Qt import QtCore, QtGui
+import pyqtgraph
 import numpy as np
 import pyqtgraph as pg
 import serial
@@ -12,34 +13,45 @@ class App(QtGui.QMainWindow):
 
         #### Create Gui Elements ###########
         self.mainbox = QtGui.QWidget()
-        self.radio = QtGui.QRadioButton()
-        self.radio.setText('Links!')
+        self.radioL = QtGui.QRadioButton()
+        self.radioR = QtGui.QRadioButton()
+        
+       
+        
+        self.radioL.setText('Links!')
+        self.radioR.setText('Rechts!')
         self.setCentralWidget(self.mainbox)
         self.mainbox.setLayout(QtGui.QVBoxLayout())
         
         self.canvas = pg.GraphicsLayoutWidget()
         self.mainbox.layout().addWidget(self.canvas)
-        self.mainbox.layout().addWidget(self.radio)
-
+        self.mainbox.layout().addWidget(self.radioL)
+        self.mainbox.layout().addWidget(self.radioR)
+       
+        self.target = pyqtgraph.InfiniteLine(angle = 0, pos = 300, movable = True, bounds=[100,400])
+       
+        self.zielhöhe = QtGui.QLabel()
         self.label = QtGui.QLabel()
         self.mainbox.layout().addWidget(self.label)
+        self.mainbox.layout().addWidget(self.zielhöhe)
         
-
         
+      
         
 
       
         #  line plot
         self.otherplot = self.canvas.addPlot()
-        self.otherplot.addLine(y=300)
+      
         self.otherplot.setYRange(0,400)
+        self.otherplot.addItem(self.target)
 
         self.h2 = self.otherplot.plot(pen='y')
         
         
        
         self.raw = serial.Serial('COM6', 115200)
-
+       
 
         
 
@@ -55,10 +67,9 @@ class App(QtGui.QMainWindow):
 
         #### Start  #####################
         self._update()
-        
-
+   
     def _update(self):
-
+        
         line = self.raw.readline()
         nonl = line.strip()
         if 0 == len(nonl): return
@@ -69,13 +80,17 @@ class App(QtGui.QMainWindow):
             val1 = 1
             val2 = 1
 
-        if self.radio.isChecked():
+        if self.radioL.isChecked():
             val = val2
-        else: val = val1
+        elif self.radioR.isChecked():
+            val = val1
+        else: 
+            val = val1
         self.ydata[:-1] = self.ydata[1:]
         self.ydata[-1] = -float(val)/64*9.81
         
         self.h2.setData(self.ydata)
+        self.zielhöhe.setText('Zielwert: '+str(self.target.value())+' N')
         
     
         now = time.time()
@@ -89,6 +104,7 @@ class App(QtGui.QMainWindow):
         self.label.setText(tx)
         QtCore.QTimer.singleShot(1, self._update)
         self.counter += 1
+        
 
 
 def main():
