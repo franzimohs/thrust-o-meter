@@ -45,7 +45,7 @@ class App(QtGui.QMainWindow):
       
         self.otherplot.setYRange(0,400)
         self.otherplot.addItem(self.target)
-
+        self.otherplot.hideButtons()
         self.h2 = self.otherplot.plot(pen='y')
         
         
@@ -90,7 +90,7 @@ class App(QtGui.QMainWindow):
         self.ydata[-1] = -float(val)/64*9.81
         
         self.h2.setData(self.ydata)
-        self.zielhöhe.setText('Zielwert: '+str(self.target.value())+' N')
+        self.zielhöhe.setText('Zielwert: '+str(int(self.target.value()))+' N')
         
     
         now = time.time()
