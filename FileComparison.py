@@ -2,6 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from Analyse import Analyse
 
+
 class FileComparison:
     """
     Compares to given files for similarities and differences.
@@ -20,7 +21,7 @@ class FileComparison:
         self.difPeak = self.comparePeaks()
         self.difPlateau = self.comparePlateaus()
         self.difTime = self.compareTime()
-    
+
     def comparePeaks(self):
 
         peak1 = self.analyse1.peakCorrect[2]
@@ -34,10 +35,69 @@ class FileComparison:
         plateau2 = self.analyse2.plateauCorrect[2]
 
         return plateau2 - plateau1
-    
+
     def compareTime(self):
 
         time1 = self.analyse1.time
         time2 = self.analyse2.time
 
         return time2 - time1
+
+    def getMeanTimeStep(self):
+        timeArray1 = self.analyse1.cleanData[:,0]
+        timeArray2 = self.analyse2.cleanData[:, 0]
+        minLen = min(timeArray1.shape[0], timeArray2.shape[0])
+        timesteps1 = (timeArray1[1:minLen]-timeArray1[:minLen-1])
+        timesteps2 = (timeArray2[1:minLen]-timeArray2[:minLen-1])
+        meanTimeStep = np.mean(np.abs(timesteps1))
+        timestepDiffSum = meanTimeStep -np.mean(np.abs(timesteps2))
+        assert timestepDiffSum < 0.05, f"Timesteps differ! Mean of Difference: {timestepDiffSum}"
+        return meanTimeStep
+
+    def getMergedArrays(self):
+        # start time
+        starttime1 = self.analyse1.cleanData[0, 0]
+        starttime2 = self.analyse2.cleanData[0, 0]
+
+        #time to peak
+        timeToPeak1 = self.analyse1.peak[1]
+        timeToPeak2 = self.analyse2.peak[1] 
+
+        #time from peak
+        timeFromPeak1 = self.analyse1.cleanData[-1, 0]-timeToPeak1
+        timeFromPeak2 = self.analyse2.cleanData[-1, 0] - timeToPeak2
+
+        # merged Times
+        mergedTimeToPeak = min(timeToPeak1-starttime1, timeToPeak2-starttime2)
+        mergedTimeFromPeak = min(timeFromPeak1,timeFromPeak2)
+        # boolean indices 
+        ind1 = np.logical_and(self.analyse1.cleanData[:, 0] >= timeToPeak1-mergedTimeToPeak,
+                              self.analyse1.cleanData[:, 0] <= timeToPeak1 + mergedTimeFromPeak)
+        ind2 = np.logical_and(self.analyse2.cleanData[:, 0] >= timeToPeak2-mergedTimeToPeak,
+                              self.analyse2.cleanData[:, 0] <= timeToPeak2 + mergedTimeFromPeak)
+
+        timestep = self.getMeanTimeStep()
+        #In some situations one array has 1 more timestep in the desired interval than the other.
+        if not np.sum(ind1)== np.sum(ind2):
+            if np.sum(ind1) > np.sum(ind2):
+                ind1[np.arange(0,ind1.shape[0])[ind1][-1]] = False
+            else:
+                ind2[np.arange(0, ind2.shape[0])[ind2][-1]] = False
+        mergedArray = np.zeros((3, np.sum(ind1)))
+        mergedArray[0,:] = np.arange(0,mergedArray.shape[1])*timestep
+        mergedArray[2, :np.sum(ind2)] = self.analyse2.cleanData[ind2, 1]
+
+        mergedArray[1, :np.sum(ind1)] = self.analyse1.cleanData[ind1, 1]
+        return mergedArray
+
+if __name__ == "__main__":
+    from Reference import createReference
+    ref = createReference(peakHeight=200)
+    testdata = np.loadtxt('ref')
+    filecomp = FileComparison(ref,testdata)
+    mergedArray = filecomp.getMergedArrays()
+    
+    plt.plot(mergedArray[0],mergedArray[1], 'b-', label = "Reference")
+    plt.plot(mergedArray[0], mergedArray[2], 'r-', label="Datafile")
+    plt.legend()
+    plt.show()

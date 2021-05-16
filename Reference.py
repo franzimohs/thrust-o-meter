@@ -53,7 +53,7 @@ def createReference(peakHeight, plateauHeight = None, plateauLenght = None):
     timeLenght = arrayLenght*11
 
     pointsX = np.array([start[0], start2[0], takeoff[0], plateau1[0], plateau11[0], plateau12[0], plateau13[0], plateau2[0], plateau3[0], plateau4[0],plateau41[0],plateau42[0],plateau43[0], plateau44[0],plateau5[0],plateau6[0], peak[0], coolDown[0], end1[0], end2[0], end3[0], end4[0]])
-    pointsY = np.array([start[1], start2[1], takeoff[1], plateau1[1], plateau11[1], plateau12[1], plateau13[1], plateau2[1], plateau3[1], plateau4[1], plateau41[1],plateau42[1],plateau43[1],plateau44[1], plateau5[1], plateau6[1], peak[1], coolDown[1], end1[1], end2[1], end3[1], end4[1]])
+    pointsY = -1*np.array([start[1], start2[1], takeoff[1], plateau1[1], plateau11[1], plateau12[1], plateau13[1], plateau2[1], plateau3[1], plateau4[1], plateau41[1],plateau42[1],plateau43[1],plateau44[1], plateau5[1], plateau6[1], peak[1], coolDown[1], end1[1], end2[1], end3[1], end4[1]])
 
     #plt.plot(pointsX,pointsY, 'rx')
     interpolation = interpolate.splrep(pointsX, pointsY)
