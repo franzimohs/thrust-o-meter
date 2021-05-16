@@ -1,5 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
+from Reference import createReference
 
 class Analyse:
 	"""
@@ -11,7 +12,7 @@ class Analyse:
 
 	def __init__(self, rawData):
 
-		self.peakIsNegativ = True                         #Falls ihr die Daten irgendwann umdreht, sodass der Peak nicht nach unten ausschlägt: Setzt das hier auf False
+		self.peakIsNegativ = False                         #Falls ihr die Daten irgendwann umdreht, sodass der Peak nicht nach unten ausschlägt: Setzt das hier auf False
 		self.sliceCount = 0                               #Hier wird mitgezählt wie oft ich den Datensatz zugeschnitten habe, damit ich in keiner Reckrsivendlosschleife ende
 		self.threshold = 10                             #So hoch müssen die Werte mindestsns sein, damit sie relevant sind (kann natürlich bei Bedarf angepasst werden)
 		self.varLenght = 20                               #Auf diese Länge wird jeweils die Varianz berechnet. Mein Tipp: Falls das Plateau für eine Mindestdauer gehalten werden muss, würde ich hier ca die Hälfte dieser Zeit eintragen.
@@ -218,8 +219,17 @@ class Analyse:
 
 		return positivData[positivData[:,1] > self.threshold,:]
 
-def open_analyse_from_main(loadData):
-	rawData = np.loadtxt(loadData)
+def open_analyse_from_main(loadData=None, **kwargs):
+	"""
+	Two ways to call:
+	1. Call with file name. open_analyse_from_main('fileName')
+	2. Call to create a reference and analyse it. open_analyse_from_main(peakHeight='forceValue')
+	"""
+	if loadData is None:
+		rawData = createReference(**kwargs)
+	else:
+		rawData = np.loadtxt(loadData)
+
 	analyse = Analyse(rawData)
 
 	fig = plt.figure()
@@ -255,4 +265,4 @@ def open_analyse_from_main(loadData):
 	plt.show()
 
 if '__main__' == __name__:
-	open_analyse_from_main()
+	open_analyse_from_main(peakHeight=300, plateauHeight=150, plateauLenght=4500)

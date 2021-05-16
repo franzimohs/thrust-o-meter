@@ -5,11 +5,22 @@ from scipy import interpolate
 from scipy.interpolate import UnivariateSpline
 
 def createReference(peakHeight, plateauHeight = None, plateauLenght = None):
+    """
+    Creates interpolated funktion and its calculated values according to given values.
 
-    if plateauHeight == None:
+    peakHight needs to be given. plateauHight and plateauLenght (in ms) are optional.
+    Default value for plateauHeight is 0.25*peakHight.
+    Default value for plateaulenght is araund 4000ms.
+
+    return: numpy array (x, 2)
+    arr[:,0] timestamps in ms (11ms steps)
+    arr[:,1] calculated force values of reference curve
+    """
+
+    if plateauHeight is None:
         plateauHeight = math.floor(peakHeight / 4)
     
-    if plateauLenght == None:
+    if plateauLenght is None:
         plateauLenght = 4004
     
     plaetauIndexLenght = math.floor(plateauLenght / 11)
@@ -61,7 +72,7 @@ def createReference(peakHeight, plateauHeight = None, plateauLenght = None):
     
 
 if '__main__' == __name__:
-    ref = createReference(270, plateauLenght= 5000)
+    ref = createReference(270, plateauLenght= 4080)
 
     plt.plot(ref[:,0], ref[:,1])
     plt.show()
