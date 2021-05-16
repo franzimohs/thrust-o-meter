@@ -227,7 +227,7 @@ class Analyse:
 		for j in range(len(positivData)):
 			index = len(positivData) -j -1
 			if positivData[index,1] > self.threshold:
-				indEnding = index +1
+				indEnding = index +2
 				break
 		
 		return positivData[indBeginning:indEnding]
