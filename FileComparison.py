@@ -92,7 +92,7 @@ class FileComparison:
 
 if __name__ == "__main__":
     from Reference import createReference
-    ref = createReference(peakHeight=200)
+    ref = createReference(peakHeight=200, plateauLenght=1450, plateauHeight=45)
     testdata = np.loadtxt('out')
     filecomp = FileComparison(ref,testdata)
     mergedArray = filecomp.getMergedArrays()
