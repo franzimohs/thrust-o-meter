@@ -205,7 +205,7 @@ class Analyse:
 			positivData[:,1] = rawData[:,1] * -1
 
 
-		positivData[:,1] = positivData[:,1] - np.min(positivData[:,1])
+		#positivData[:,1] = positivData[:,1] - np.min(positivData[:,1])
 
 		return positivData
 
@@ -216,8 +216,21 @@ class Analyse:
 		param: data where peak is positiv
 		Return: Array only containing rise of plateau to end of peak.
 		"""
+		indBeginning = 0
+		indEnding = len(positivData)
 
-		return positivData[positivData[:,1] > self.threshold,:]
+		for i in range(len(positivData)):
+			if positivData[i,1] > self.threshold:
+				indBeginning = i
+				break
+		
+		for j in range(len(positivData)):
+			index = len(positivData) -j -1
+			if positivData[index,1] > self.threshold:
+				indEnding = index +1
+				break
+		
+		return positivData[indBeginning:indEnding]
 
 def open_analyse_from_main(loadData=None, **kwargs):
 	"""
