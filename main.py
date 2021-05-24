@@ -36,7 +36,10 @@ def read_serial(raw):
             line = raw.readline()
             nonl = line.strip()
             decoded = nonl.decode()
-            serial_list = decoded.split() 
+            a, b, c = decoded.split()
+            serial_list[0] = a
+            serial_list[1] = b
+            serial_list[2] = c
         except: 
             pass
 Thread(target=read_serial, args=(raw,)).start()

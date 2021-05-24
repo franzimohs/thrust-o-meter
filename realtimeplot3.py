@@ -70,7 +70,9 @@ class App(QtGui.QMainWindow):
         self.lastupdate = time.time()
 
         #### Start  #####################
-        self._update()
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self._update)
+        self.timer.start(1000/30)  # Hz
 
     def _update(self):
         # line = self.raw.readline()
@@ -105,7 +107,6 @@ class App(QtGui.QMainWindow):
         self.fps = self.fps * 0.9 + fps2 * 0.1
         tx = 'Mean Frame Rate:  {fps:.3f} FPS'.format(fps=self.fps )
         self.label.setText(tx)
-        QtCore.QTimer.singleShot(1, self._update)
         self.counter += 1
         
 
