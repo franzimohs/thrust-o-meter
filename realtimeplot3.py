@@ -1,14 +1,16 @@
+
 import sys
 import time
 from pyqtgraph.Qt import QtCore, QtGui
 import pyqtgraph
 import numpy as np
 import pyqtgraph as pg
-import serial
+# import serial
+
 
 
 class App(QtGui.QMainWindow):
-    def __init__(self, parent=None):
+    def __init__(self, serial_list, parent=None):
         super(App, self).__init__(parent)
 
         #### Create Gui Elements ###########
@@ -50,7 +52,7 @@ class App(QtGui.QMainWindow):
         
         
        
-        self.raw = serial.Serial('COM6', 115200)
+        # self.raw = serial.Serial('COM6', 115200)
        
 
         
@@ -66,16 +68,16 @@ class App(QtGui.QMainWindow):
         self.lastupdate = time.time()
 
         #### Start  #####################
-        self._update()
+        self._update(serial_list)
    
-    def _update(self):
+    def _update(self, serial_list):
         
-        line = self.raw.readline()
-        nonl = line.strip()
-        if 0 == len(nonl): return
-        decoded = nonl.decode()
+        # line = self.raw.readline()
+        # nonl = line.strip()
+        # if 0 == len(nonl): return
+        # decoded = nonl.decode()
         try :
-            t, val1, val2 = decoded.split()
+            t, val1, val2 = serial_list
         except: 
             val1 = 1
             val2 = 1
@@ -107,17 +109,20 @@ class App(QtGui.QMainWindow):
         
 
 
-def main():
+def main(serial_list):
+    
     app = QtGui.QApplication(sys.argv)
-    thisapp = App()
+    thisapp = App(serial_list)
     thisapp.show()
     sys.exit(app.exec_())
 
-def open_realtimeplot3_from_main():
+def open_realtimeplot3_from_main(serial_list):
     try:
-        main()
+        main(serial_list)
     except KeyboardInterrupt:
         pass
+    
+
 
 if __name__ == '__main__':
     open_realtimeplot3_from_main()
