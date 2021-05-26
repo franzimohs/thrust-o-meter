@@ -1,6 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from Analyse import Analyse
+from Reference import createReference
 
 
 class FileComparison:
@@ -89,15 +90,25 @@ class FileComparison:
 
         mergedArray[1, :np.sum(ind1)] = self.analyse1.cleanData[ind1, 1]
         return mergedArray
-
-if __name__ == "__main__":
-    from Reference import createReference
-    ref = createReference(peakHeight=200, plateauLenght=1300, plateauHeight=75)
-    testdata = np.loadtxt('ref')
+def main(loaddata, peakHight, plateauHight, plateauLength):
+    ref = createReference(peakHight, plateauHight, plateauLength)
+    testdata = np.loadtxt(loaddata)
+    print(testdata)
     filecomp = FileComparison(ref,testdata)
     mergedArray = filecomp.getMergedArrays()
+    print()
+    
     
     plt.plot(mergedArray[0],mergedArray[1], 'b-', label = "Reference")
     plt.plot(mergedArray[0], mergedArray[2], 'r-', label="Datafile")
+    plt.figtext(0.15, 0.55 ,f"Absolute Werte: \nPlateau: {filecomp.analyse2.plateau[2]}N \nSpannungsabfall: {filecomp.analyse2.dentDepth}N \nMaximalkraft: {filecomp.analyse2.peak[2]}N \nZeit: {filecomp.analyse2.time}ms", bbox={"facecolor":"orange", "alpha":0.5, "pad":5})
+    plt.figtext(0.15, 0.35 ,f"Differenz zur Referenz: \nPlateau:{round(filecomp.difPlateau,2)}N \nMaximalkraft: {round(filecomp.difPeak,2)}N \nZeit: {round(filecomp.difTime,2)}ms", bbox={"facecolor":"orange", "alpha":0.5, "pad":5})
     plt.legend()
+    plt.xlabel('Zeit[ms]')
+    plt.ylabel('Kraft[N]')
     plt.show()
+
+if __name__ == "__main__":
+    main('franzi', 360, 80, 1600)
+
+    

@@ -99,10 +99,13 @@ class Analyse:
 
 		for i in range(peakInd):
 			varArr[i,1] = np.var(cleanData[i:i+self.varLenght,1])
+			
 
 		self.varArrayunreduziert = varArr
-
+		print(varArr[:,1])
 		minVar = np.min(varArr[:,1])
+			
+			
 
 		if minVar < 0.1:
 			minVar = 0.01
@@ -274,7 +277,7 @@ def open_analyse_from_main(loadData=None, **kwargs):
 	textX2 = np.min(analyse.rawDataBackUp[:,0])
 	textY2 = analyse.plateauCorrect[2] + ((analyse.peakCorrect[2] - analyse.plateauCorrect[2]) /2)
 	ax3.text(textX2, textY2, f"Plateau: {analyse.plateauCorrect[2]} \nDelle: {analyse.dentCorrect[2]} \nSpannungsabfall: {analyse.dentDepth} \nSpitze: {analyse.peakCorrect[2]} \nSteigung: {analyse.slope}\nZeit: {analyse.time}")
-
+	print(rawData)
 	plt.show()
 
 if '__main__' == __name__:

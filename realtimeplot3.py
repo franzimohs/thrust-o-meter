@@ -5,7 +5,6 @@ from pyqtgraph.Qt import QtCore, QtGui
 import pyqtgraph
 import numpy as np
 import pyqtgraph as pg
-# import serial
 
 
 
@@ -15,7 +14,6 @@ class App(QtGui.QMainWindow):
 
         self.serial_list = serial_list
 
-        #### Create Gui Elements ###########
         self.mainbox = QtGui.QWidget()
         self.radioL = QtGui.QRadioButton()
         self.radioR = QtGui.QRadioButton()
@@ -40,11 +38,6 @@ class App(QtGui.QMainWindow):
         self.mainbox.layout().addWidget(self.zielhöhe)
         
         
-      
-        
-
-      
-        #  line plot
         self.otherplot = self.canvas.addPlot()
       
         self.otherplot.setYRange(0,400)
@@ -52,39 +45,18 @@ class App(QtGui.QMainWindow):
         self.otherplot.hideButtons()
         self.h2 = self.otherplot.plot(pen='y')
         
-        
-       
-        # self.raw = serial.Serial('COM6', 115200)
-       
-
-        
-
-
-        #### Set Data  #####################
-
-        
-        self.ydata = np.zeros(100)
+        self.ydata = np.zeros(1000)
        
         self.counter = 0
         self.fps = 0.
         self.lastupdate = time.time()
 
-        #### Start  #####################
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self._update)
-        self.timer.start(1000/30)  # Hz
+        self.timer.start(1000/30)  
 
     def _update(self):
-        # line = self.raw.readline()
-        # nonl = line.strip()
-        # if 0 == len(nonl): return
-        # decoded = nonl.decode()
-        try :
-            t, val1, val2 = self.serial_list
-        except: 
-            val1 = 1
-            val2 = 1
-
+        t, val1, val2 = self.serial_list
         if self.radioL.isChecked():
             val = val2
         elif self.radioR.isChecked():
@@ -107,6 +79,7 @@ class App(QtGui.QMainWindow):
         self.fps = self.fps * 0.9 + fps2 * 0.1
         tx = 'Mean Frame Rate:  {fps:.3f} FPS'.format(fps=self.fps )
         self.label.setText(tx)
+        QtCore.QTimer.singleShot(10, self._update)
         self.counter += 1
         
 
@@ -117,6 +90,8 @@ def main(serial_list):
     thisapp = App(serial_list)
     thisapp.show()
     sys.exit(app.exec_())
+    
+
 
 def open_realtimeplot3_from_main(serial_list):
     try:

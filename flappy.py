@@ -1,10 +1,9 @@
 from itertools import cycle
 import random
 import sys
-
 import pygame
 from pygame.locals import *
-import serial
+# import serial
 
 
 FPS = 30
@@ -14,6 +13,8 @@ PIPEGAPSIZE  = 70 # gap between upper and lower part of pipe
 BASEY        = SCREENHEIGHT * 0.79
 # image, sound and hitmask  dicts
 IMAGES, SOUNDS, HITMASKS = {}, {}, {}
+flag =True
+serial_list = [10,10.0, 10.0]
 
 # list of all possible players (tuple of 3 positions of flap)
 
@@ -55,9 +56,11 @@ try:
 except NameError:
     xrange = range
 
-raw = serial.Serial('COM6', 115200)
-def main():
-    global SCREEN, FPSCLOCK
+# raw = serial.Serial('COM6', 115200)
+def main(Flag, Serial_list):
+    global SCREEN, FPSCLOCK, flag, serial_list
+    serial_list = Serial_list
+    flag = Flag
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
     SCREEN = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
@@ -137,19 +140,19 @@ def main():
         showGameOverScreen(crashInfo)
 
 
-def read_serial(val=-150):
-    for i in range(5):
-        line = raw.readline()
-        nonl = line.strip()
-        if 0 == len(nonl): return val
-        try :
-            decoded = nonl.decode()
-            t, val1, val2 = decoded.split()
-            faktor_benutzte_bildschirmhöhe =  700/362 #400N sollen maximal aufgezeichnet werden
-    
-            val = (((float(val1)/64*9.81) * faktor_benutzte_bildschirmhöhe)-140) #1kg=64 g=9,81 Bodenhöhe=200
-        except: 
-            pass
+def read_serial(flag, serial_list, val=-150):
+# for i in range(5):
+#     line = raw.readline()
+#     nonl = line.strip()
+#     if 0 == len(nonl): return val
+#     try :
+#         decoded = nonl.decode()
+    t, val1, val2 = serial_list #decoded.split()
+    faktor_benutzte_bildschirmhöhe =  700/362 #400N sollen maximal aufgezeichnet werden
+    if flag:
+        valy =val1
+    else: valy= val2
+    val = (((float(valy)/64*9.81) * faktor_benutzte_bildschirmhöhe)-140) #1kg=64 g=9,81 Bodenhöhe=200
     return val
 
 def showWelcomeAnimation():
@@ -175,7 +178,7 @@ def showWelcomeAnimation():
     playerShmVals = {'val': 0, 'dir': 1}
 
     while True:
-        val = read_serial(val)
+        val = read_serial(flag, serial_list, val)
         if val < -250:
             SOUNDS['wing'].play()
             return {
@@ -326,7 +329,7 @@ def mainGame(movementInfo):
             playerRot = 0#45 
 
         # playerHeight = IMAGES['player'][playerIndex].get_height()
-        val = read_serial(val)
+        val = read_serial(flag,serial_list, val)
 
             # playery += min(playerVelY, BASEY - playery - playerHeight)
         playery = SCREENHEIGHT + val
@@ -413,7 +416,7 @@ def showGameOverScreen(crashInfo):
     cd_gameover = 30
 
     while True:
-        val = read_serial(val)
+        val = read_serial(flag,serial_list, val)
         cd_gameover -= 1
         if (val < -250) and (cd_gameover <= 0):
             return
@@ -602,4 +605,4 @@ def getHitmask(image):
     return mask
 
 if __name__ == '__main__':
-    main()
+    main(True,[10, 10.0,10.0])

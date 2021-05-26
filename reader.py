@@ -8,11 +8,11 @@ from tkinter.font import Font
 import datetime
 
 class Reader(tk.Frame):
-	def __init__(self, master=None):
+	def __init__(self, serial_list, master=None):
 		tk.Frame.__init__(self, master)
 		if hasattr(master, 'title'): master.title('reader')
 		self.grid()
-
+		self.serial_list= serial_list
 		self.font = Font(family='monospace')
 
 		outer_frame = tk.Frame(self)
@@ -26,16 +26,6 @@ class Reader(tk.Frame):
 		self.flag_update = tk.IntVar()
 		tk.Radiobutton(f, text='Rechts!', var=self.flag_update, value=True).grid(row = 0, column = 4)
 		tk.Radiobutton(f, text='Links!', var=self.flag_update, value=False).grid(row = 0, column = 5)
-		
-		try:
-			port = sys.argv[1]
-		except Exception:
-			port = 'COM6'
-
-		tk.Label(f, font=self.font, text='device').grid(row = 0, column = 2)
-		self.dev = tk.Entry(f, font=self.font)
-		self.dev.grid(row = 0, column = 3)
-		self.dev.insert(0, port)
 
 		self.samplecount = tk.Label(f, font=self.font, text='samples')
 		self.samplecount.grid(row = 0, column = 6)
@@ -70,47 +60,31 @@ class Reader(tk.Frame):
 		self.samplecount['text'] = 'saved'
 
 	def reader(self):
-		port = self.dev.get()
+		
+		
+		while self.recording:
+			t, val1, val2 = self.serial_list 
+			if self.flag_update.get():
+				val = float(val1)
+			else: val = float(val2)
+			
+			
 
-		kwargs = {}
-		if 'fake' == port:
-			import fakeserial
-			kwargs['master'] = self.frame_fakeserial
-			serial_class = fakeserial
-		else:
-			import serial
-			serial_class = serial
+			# -64 == 1kg load g= 9,81 F= m*g
+			self.data.append((int(t), (val/64*9.81)))
 
-		with serial_class.Serial(self.dev.get(), 115200, timeout=1, **kwargs) as s:
-			while self.recording:
-				try:
-					line = s.readline()
-					nonl = line.strip()
-					decoded = nonl.decode()
-					t, val1, val2 = decoded.split()
-					if self.flag_update.get():
-						val = float(val1)
-					else: val = float(val2)
-				
-				except Exception as e:
-					print(e)
-					continue
+			self.samplecount['text'] = '%d samples' % len(self.data)
 
-				# -64 == 1kg load g= 9,81 F= m*g
-				self.data.append((int(t), (val/64*9.81)))
-
-				self.samplecount['text'] = '%d samples' % len(self.data)
-
-def main():
+def main(serial_list):
 	root = tk.Tk()
-	app = Reader(master=root)
+	app = Reader(serial_list, master=root)
 	app.mainloop()
 
-def open_reader_from_main():
+def open_reader_from_main(serial_list):
 	try:
-		main()
+		main(serial_list)
 	except KeyboardInterrupt:
 		pass
 
 if '__main__' == __name__:
-	open_reader_from_main()
+	open_reader_from_main([10,10.0,10.0])
