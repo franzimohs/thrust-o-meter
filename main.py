@@ -12,6 +12,8 @@ from FileComparison import main as filecomp
 serial_list = [10, 10.0, 10.0]
 eichwert_r = 0.00
 eichwert_l = 0.00
+nullwert_r = 0.00
+nullwert_l = 0.00
 
 def center(win):
     """
@@ -33,38 +35,39 @@ def center(win):
 # 
 
 class ThrustOMeter():
-        
-    
         def browsefunc(self):
             self.filename = filedialog.askopenfilename()
             self.pathlabel.config(text=self.filename)
             self.analyse_btn.config(state='normal')
-        
 
-        def eichung(self, serial_list): 
+        def eichung(self, serial_list):
             global eichwert_r, eichwert_l
             if self.eichungwechsel:
                 eichwert_r = serial_list[1]
                 self.eichungR_lable.config(text=f"Rechts: {str(eichwert_r)}")
                 self.eichungwechsel = False
                 self.eichung_btn.config(text='Eichung 1kg Links')
-            else: 
+            else:
                 eichwert_l = serial_list[2]
                 self.eichungL_lable.config()
                 self.eichungL_lable.config(text=f"Links: {str(eichwert_l)}")
                 self.eichungwechsel = True
                 self.eichung_btn.config(text='Eichung 1kg Rechts')
-            
-            
+
+        def nullung(self, serial_list):
+            global nullwert_r, nullwert_l
+            nullwert_r = serial_list[1]
+            nullwert_l = serial_list[2]
+
         def speichern(self):
             with open('Eichwert', 'w') as speicher:
-		    speicher.write(f'{eichwert_r}\n{eichwert_l}\n')
+                speicher.write(f'{eichwert_r}\n{eichwert_l}\n')
 
         def entspeichern(self):
             global eichwert_r, eichwert_l
             with open('Eichwert', 'r') as speicher:
-		    eichwert_r = float(speicher.readline().strip())
-		    eichwert_l = float(speicher.readline().strip())
+                eichwert_r = float(speicher.readline().strip())
+                eichwert_l = float(speicher.readline().strip())
 
         def __init__(self, window, window_title):
             self.window = window
@@ -131,8 +134,8 @@ def main(Port):
                 decoded = nonl.decode()
                 t, r, l = decoded.split()
                 serial_list[0] = t
-                serial_list[1] = r - eichwert_r
-                serial_list[2] = l - eichwert_l
+                serial_list[1] = (r - nullwert_r) / (eichwert_r - nullwert_r)
+                serial_list[2] = (l - nullwert_l) / (eichwert_l - nullwert_l)
             except: 
                 pass
     Thread(target=read_serial, args=(raw,)).start()
