@@ -10,6 +10,8 @@ from threading import Thread
 import serial
 from FileComparison import main as filecomp
 serial_list = [10, 10.0, 10.0]
+eichwert_r = 0.00
+eichwert_l = 0.00
 
 def center(win):
     """
@@ -40,23 +42,29 @@ class ThrustOMeter():
         
 
         def eichung(self, serial_list): 
+            global eichwert_l, eichwert_r
             if self.eichungwechsel:
-                self.eichwert_r=serial_list[1]
-                self.eichungR_lable.config(text=f"Rechts: {str(self.eichwert_r)}")
-                self.eichungwechsel=False#warum kommt man nach einer runde hier nicht hin??
+                eichwert_r = serial_list[1]
+                self.eichungR_lable.config(text=f"Rechts: {str(eichwert_r)}")
+                self.eichungwechsel = False
                 self.eichung_btn.config(text='Eichung 1kg Links')
             else: 
-                self.eichwert_l=serial_list[2]
+                eichwert_l = serial_list[2]
                 self.eichungL_lable.config()
-                self.eichungL_lable.config(text=f"Links: {str(self.eichwert_l)}")
-                self.eichungswechsel=True
+                self.eichungL_lable.config(text=f"Links: {str(eichwert_l)}")
+                self.eichungwechsel = True
                 self.eichung_btn.config(text='Eichung 1kg Rechts')
             
             
         def speichern(self):
             speicher = open('Eichwert', 'w')
-            speicher.write(self.eichwert_r +'\n'+self.eichwert_l)
-            
+            speicher.write(f'{eichwert_r}\n{eichwert_l}\n')
+
+        def entspeichern(self):
+            global eichwert_l, eichwert_r
+            speicher = open('Eichwert', 'r')
+            eichwert_r = float(speicher.readline().strip())
+            eichwert_l = float(speicher.readline().strip())
 
         def __init__(self, window, window_title):
             self.window = window
@@ -65,14 +73,11 @@ class ThrustOMeter():
 
         
             
-            self.pathlabel =tk.Label(window)
+            self.pathlabel = tk.Label(window)
             self.pathlabel.grid(row=0, column=0, sticky='e')
-            self.flag_game =tk.BooleanVar()
-            self.eichwert_l= 0.00
-            self.eichwert_r= 0.00
-            self.Eichung= [self.eichwert_r, self.eichwert_l]
-            self.eichungwechsel= True
-            browsebutton =tk.Button(window, text="Browse", command=self.browsefunc)
+            self.flag_game = tk.BooleanVar()
+            self.eichungwechsel = True
+            browsebutton = tk.Button(window, text="Browse", command=self.browsefunc)
             browsebutton.grid(row=1, padx=121, column=0)
             tk.Label(window, text='Maximalkraft: ').grid(row=0, column=2, sticky='w')
             tk.Label(window, text='Vorspannungskraft: ').grid(row=1, column=2, sticky='w')
@@ -124,10 +129,10 @@ def main(Port):
                 line = raw.readline()
                 nonl = line.strip()
                 decoded = nonl.decode()
-                a, b, c = decoded.split()
-                serial_list[0] = a
-                serial_list[1] = b
-                serial_list[2] = c
+                t, r, l = decoded.split()
+                serial_list[0] = t
+                serial_list[1] = r - eichwert_r
+                serial_list[2] = l - eichwert_l
             except: 
                 pass
     Thread(target=read_serial, args=(raw,)).start()
