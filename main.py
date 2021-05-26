@@ -42,7 +42,7 @@ class ThrustOMeter():
         
 
         def eichung(self, serial_list): 
-            global eichwert_l, eichwert_r
+            global eichwert_r, eichwert_l
             if self.eichungwechsel:
                 eichwert_r = serial_list[1]
                 self.eichungR_lable.config(text=f"Rechts: {str(eichwert_r)}")
@@ -57,14 +57,14 @@ class ThrustOMeter():
             
             
         def speichern(self):
-            speicher = open('Eichwert', 'w')
-            speicher.write(f'{eichwert_r}\n{eichwert_l}\n')
+            with open('Eichwert', 'w') as speicher:
+		    speicher.write(f'{eichwert_r}\n{eichwert_l}\n')
 
         def entspeichern(self):
-            global eichwert_l, eichwert_r
-            speicher = open('Eichwert', 'r')
-            eichwert_r = float(speicher.readline().strip())
-            eichwert_l = float(speicher.readline().strip())
+            global eichwert_r, eichwert_l
+            with open('Eichwert', 'r') as speicher:
+		    eichwert_r = float(speicher.readline().strip())
+		    eichwert_l = float(speicher.readline().strip())
 
         def __init__(self, window, window_title):
             self.window = window
