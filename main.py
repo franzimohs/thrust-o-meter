@@ -6,14 +6,22 @@ from reader import open_reader_from_main
 from realtimeplot3 import open_realtimeplot3_from_main
 import subprocess
 from flappy import main as flappy
-from threading import Thread
+from threading import Thread, Condition
 import serial
 from FileComparison import main as filecomp
-serial_list = [10, 10.0, 10.0]
 eichwert_r = 0.00
 eichwert_l = 0.00
 nullwert_r = 0.00
 nullwert_l = 0.00
+
+class Daten():
+        def __init__(self):
+                self.lock = Condition()
+                self.t = 10
+                self.r = 10.0
+                self.l = 10.0
+
+daten = Daten()
 
 def center(win):
     """
@@ -40,24 +48,24 @@ class ThrustOMeter():
             self.pathlabel.config(text=self.filename)
             self.analyse_btn.config(state='normal')
 
-        def eichung(self, serial_list):
+        def eichung(self, daten):
             global eichwert_r, eichwert_l
             if self.eichungwechsel:
-                eichwert_r = serial_list[1]
+                eichwert_r = daten.r
                 self.eichungR_lable.config(text=f"Rechts: {str(eichwert_r)}")
                 self.eichungwechsel = False
                 self.eichung_btn.config(text='Eichung 1kg Links')
             else:
-                eichwert_l = serial_list[2]
+                eichwert_l = daten.l
                 self.eichungL_lable.config()
                 self.eichungL_lable.config(text=f"Links: {str(eichwert_l)}")
                 self.eichungwechsel = True
                 self.eichung_btn.config(text='Eichung 1kg Rechts')
 
-        def nullung(self, serial_list):
+        def nullung(self, daten):
             global nullwert_r, nullwert_l
-            nullwert_r = serial_list[1]
-            nullwert_l = serial_list[2]
+            nullwert_r = daten.r
+            nullwert_l = daten.l
 
         def speichern(self):
             with open('Eichwert', 'w') as speicher:
@@ -94,16 +102,16 @@ class ThrustOMeter():
             plateauL_entry.grid(row=2, column=3, sticky='w')
             self.analyse_btn =tk.Button(window, text="ANALYSE!", bd='5', command=lambda: filecomp(self.filename,float(peak_entry.get()), float(plateauH_entry.get()), float(plateauL_entry.get())), state='disabled')
             self.analyse_btn.grid(row=0, column=1, sticky='w' )
-            reader_btn =tk.Button(window, text="READER!", bd='5', command=lambda: open_reader_from_main(serial_list))
+            reader_btn =tk.Button(window, text="READER!", bd='5', command=lambda: open_reader_from_main(daten))
             reader_btn.grid(row=3, column=1, sticky='w')
-            realtimeplot_btn =tk.Button(window, text="REALTIMEPLOT!", bd='5', command=lambda: open_realtimeplot3_from_main(serial_list))
+            realtimeplot_btn =tk.Button(window, text="REALTIMEPLOT!", bd='5', command=lambda: open_realtimeplot3_from_main(daten))
             realtimeplot_btn.grid(row=4, column=1, sticky='w')
             
             game_rdR =tk.Radiobutton(window, text= 'Rechts!', var = self.flag_game, value=True)
             game_rdR.grid(row=5, column =2, sticky='w')
             game_rdL =tk.Radiobutton(window, text = 'Links!', var = self.flag_game, value = False)
             game_rdL.grid(row=5, column=3, sticky='w')
-            game_btn =tk.Button(window, text="SPIEL!", bd='5', command=lambda: flappy(self.flag_game.get(),serial_list))
+            game_btn =tk.Button(window, text="SPIEL!", bd='5', command=lambda: flappy(self.flag_game.get(), daten))
             game_btn.grid(row=5, column=1, sticky='w')
             fortschritt_btn =tk.Button(window, text="FORTSCHRITT!", bd='5')
             fortschritt_btn.grid(row=6, column=1, sticky='w')
@@ -113,7 +121,7 @@ class ThrustOMeter():
             self.eichungL_lable=tk.Label(window, text='Links')
             self.eichungL_lable.grid(row=8, column=0, sticky='w')
             
-            self.eichung_btn=tk.Button(window, text='Eichung 1kg Rechts', bd='5', command=lambda: self.eichung(serial_list) )
+            self.eichung_btn=tk.Button(window, text='Eichung 1kg Rechts', bd='5', command=lambda: self.eichung(daten))
             self.eichung_btn.grid(row=7, column= 1, sticky='w')
             speichern_btn = tk.Button(window, text='speichern!',command=self.speichern)
             speichern_btn.grid(row=7, column=2, sticky='w')
@@ -126,19 +134,22 @@ def main(Port):
     raw = serial.Serial(Port, 115200)
 
     def read_serial(raw):
-        global serial_list
+        global daten
+        daten.lock.acquire()
+
         while True:
-            try :
+            try:
                 line = raw.readline()
                 nonl = line.strip()
                 decoded = nonl.decode()
                 t, r, l = decoded.split()
-                serial_list[0] = t
-                serial_list[1] = (r - nullwert_r) / (eichwert_r - nullwert_r)
-                serial_list[2] = (l - nullwert_l) / (eichwert_l - nullwert_l)
+                daten.t = t
+                daten.r = (r - nullwert_r) / (eichwert_r - nullwert_r)
+                daten.l = (l - nullwert_l) / (eichwert_l - nullwert_l)
+                daten.lock.notify_all()
             except: 
                 pass
-    Thread(target=read_serial, args=(raw,)).start()
+    Thread(target=read_serial, args=(raw,), daemon=True).start()
     ThrustOMeter(tk.Tk(), "Thrust-O-Meter")
 
 if __name__ == '__main__':

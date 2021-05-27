@@ -8,11 +8,11 @@ from tkinter.font import Font
 import datetime
 
 class Reader(tk.Frame):
-	def __init__(self, serial_list, master=None):
+	def __init__(self, daten, master=None):
 		tk.Frame.__init__(self, master)
 		if hasattr(master, 'title'): master.title('reader')
 		self.grid()
-		self.serial_list= serial_list
+		self.daten = daten
 		self.font = Font(family='monospace')
 
 		outer_frame = tk.Frame(self)
@@ -60,31 +60,31 @@ class Reader(tk.Frame):
 		self.samplecount['text'] = 'saved'
 
 	def reader(self):
-		
-		
+		self.daten.lock.acquire()
+
 		while self.recording:
-			t, val1, val2 = self.serial_list 
 			if self.flag_update.get():
-				val = float(val1)
-			else: val = float(val2)
-			
-			
+				val = self.daten.r
+			else:
+				val = self.daten.l
 
 			# -64 == 1kg load g= 9,81 F= m*g
-			self.data.append((int(t), (val/64*9.81)))
+			self.data.append((self.daten.t, (val/64*9.81)))
 
 			self.samplecount['text'] = '%d samples' % len(self.data)
 
-def main(serial_list):
+			self.daten.lock.wait()
+
+def main(daten):
 	root = tk.Tk()
-	app = Reader(serial_list, master=root)
+	app = Reader(daten, master=root)
 	app.mainloop()
 
-def open_reader_from_main(serial_list):
+def open_reader_from_main(daten):
 	try:
-		main(serial_list)
+		main(daten)
 	except KeyboardInterrupt:
 		pass
 
 if '__main__' == __name__:
-	open_reader_from_main([10,10.0,10.0])
+	open_reader_from_main([10,10.0,10.0]) # FIXME kaputt
