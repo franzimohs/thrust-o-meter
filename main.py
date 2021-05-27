@@ -145,7 +145,7 @@ def main(Port):
                 parts = decoded.split()
                 if (3 != len(parts)):
                         continue
-                t, r, l = *parts
+                t, r, l = parts
 
                 daten.t = t
                 daten.r = (r - nullwert_r) / (eichwert_r - nullwert_r)
