@@ -61,7 +61,7 @@ class Reader(tk.Frame):
 
 	def reader(self):
 		self.daten.lock.acquire()
-
+		print('inreader')
 		while self.recording:
 			if self.flag_update.get():
 				val = self.daten.r
@@ -72,7 +72,6 @@ class Reader(tk.Frame):
 			self.data.append((self.daten.t, (val/64*9.81)))
 
 			self.samplecount['text'] = '%d samples' % len(self.data)
-
 			self.daten.lock.wait()
 
 def main(daten):

@@ -81,7 +81,7 @@ class ThrustOMeter():
             self.window = window
             self.window.title(window_title)
             self.window.geometry("700x300")
-
+            self.entspeichern()
         
             
             self.pathlabel = tk.Label(window)
@@ -150,7 +150,6 @@ def main(Port):
                 daten.t = int(t)
                 daten.r = (float(r) - nullwert_r) / (eichwert_r - nullwert_r)
                 daten.l = (float(l) - nullwert_l) / (eichwert_l - nullwert_l)
-
                 with daten.lock:
                         daten.lock.notify_all()
             except: 
