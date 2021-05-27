@@ -63,7 +63,7 @@ class App(QtGui.QMainWindow):
         else: 
             val = self.daten.r
         self.ydata[:-1] = self.ydata[1:]
-        self.ydata[-1] = -float(val)/64*9.81
+        self.ydata[-1] = val*9.81
         
         self.h2.setData(self.ydata)
         self.zielhöhe.setText('Zielwert: '+str(int(self.target.value()))+' N')

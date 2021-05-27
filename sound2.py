@@ -3,7 +3,7 @@ import numpy
 import threading 
 # import serial
 import tkinter as tk
-
+lock = threading.Condition()
 sampler = ap.Sampler()
 freq = 440.0
 sr = 22050
@@ -49,13 +49,13 @@ class Sound:
         
 
 def main(daten):
+    
     def update(daten):
         daten.lock.acquire()
 
         while True:
             s1.pitch_shift = int(daten.r)  # FIXME stufig, testen ob float nicht tut
-
-            lock.wait()
+            daten.lock.wait()
 
     threading.Thread(target=update, args=(daten,), daemon=True).start()
     Sound(tk.Tk(), "Sound")

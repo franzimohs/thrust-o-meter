@@ -154,7 +154,7 @@ def read_serial(flag, daten, val=-150):
     else:
         valy = daten.l
 
-    val = (((float(valy)/64*9.81) * faktor_benutzte_bildschirmhöhe)-140) #1kg=64 g=9,81 Bodenhöhe=200
+    val = (((valy*9.81) * faktor_benutzte_bildschirmhöhe)-140) #1kg=64 g=9,81 Bodenhöhe=200
 
     return val
 
@@ -194,7 +194,6 @@ def showWelcomeAnimation():
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                 pygame.quit()
-                sys.exit()               
             if event.type == KEYDOWN and (event.key == K_SPACE or event.key == K_UP):
                 # make first flap sound and return values for mainGame
                 SOUNDS['wing'].play()
@@ -268,7 +267,6 @@ def mainGame(movementInfo):
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                 pygame.quit()
-                sys.exit()
             if event.type == KEYDOWN and (event.key == K_SPACE or event.key == K_UP):
                 if playery > -2 * IMAGES['player'][0].get_height():
                     playerVelY = playerFlapAcc
@@ -427,7 +425,6 @@ def showGameOverScreen(crashInfo):
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                 pygame.quit()
-                sys.exit()
             if event.type == KEYDOWN and (event.key == K_SPACE or event.key == K_UP):
                 if playery + playerHeight >= BASEY - 1:
                     return

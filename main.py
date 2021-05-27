@@ -9,6 +9,7 @@ from flappy import main as flappy
 from threading import Thread, Condition
 import serial
 from FileComparison import main as filecomp
+from sound2 import main as sound
 eichwert_r = 0.00
 eichwert_l = 0.00
 nullwert_r = 0.00
@@ -107,9 +108,9 @@ class ThrustOMeter():
             realtimeplot_btn =tk.Button(window, text="REALTIMEPLOT!", bd='5', command=lambda: open_realtimeplot3_from_main(daten))
             realtimeplot_btn.grid(row=4, column=1, sticky='w')
             
-            game_rdR =tk.Radiobutton(window, text= 'Rechts!', var = self.flag_game, value=True)
+            game_rdR =tk.Radiobutton(window, text= 'Rechts!', var = self.flag_game, value=False)
             game_rdR.grid(row=5, column =2, sticky='w')
-            game_rdL =tk.Radiobutton(window, text = 'Links!', var = self.flag_game, value = False)
+            game_rdL =tk.Radiobutton(window, text = 'Links!', var = self.flag_game, value = True)
             game_rdL.grid(row=5, column=3, sticky='w')
             game_btn =tk.Button(window, text="SPIEL!", bd='5', command=lambda: flappy(self.flag_game.get(), daten))
             game_btn.grid(row=5, column=1, sticky='w')
@@ -123,8 +124,10 @@ class ThrustOMeter():
             
             self.eichung_btn=tk.Button(window, text='Eichung 1kg Rechts', bd='5', command=lambda: self.eichung(daten))
             self.eichung_btn.grid(row=7, column= 1, sticky='w')
-            speichern_btn = tk.Button(window, text='speichern!',command=self.speichern)
+            speichern_btn = tk.Button(window, text='speichern!',bd='5', command=self.speichern)
             speichern_btn.grid(row=7, column=2, sticky='w')
+            sound_btn= tk.Button(window, text='SOUND!', bd='5', command=lambda: sound(daten) )
+            sound_btn.grid(row=8, column=1, sticky='w')
 
             center(self.window)
             self.window.mainloop()    
