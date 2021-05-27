@@ -1,30 +1,71 @@
 import aupyom as ap
 import numpy
-from threading import Thread
-import serial
-raw = serial.Serial('COM6', 115200)
+import threading 
+# import serial
+import tkinter as tk
 
 sampler = ap.Sampler()
 freq = 440.0
 sr = 22050
 t = 50
 s1 = ap.Sound(numpy.sin(2 * numpy.pi * freq * numpy.linspace(0, t, sr * t)), sr)
+def center(win):
+    """
+    centers a tkinter window
+    :param win: the main window or Toplevel window to center
+    """
+    win.update_idletasks()
+    width = win.winfo_width()
+    frm_width = win.winfo_rootx() - win.winfo_x()
+    win_width = width + 2 * frm_width
+    height = win.winfo_height()
+    titlebar_height = win.winfo_rooty() - win.winfo_y()
+    win_height = height + titlebar_height + frm_width
+    x = win.winfo_screenwidth() // 2 - win_width // 2
+    y = win.winfo_screenheight() // 2 - win_height // 2
+    win.geometry('{}x{}+{}+{}'.format(width, height, x, y))
+    win.deiconify()
 
-def read_serial(raw):
-    while True:
-        try :
-            line = raw.readline()
-            nonl = line.strip()
-            decoded = nonl.decode()
-            z, val1, val2 = decoded.split()
-            zeug = int(-float(val1)/64) #1kg=64 g=9,81 Bodenhöhe=200
-            s1.pitch_shift = zeug
-        except Exception as e:
-            print(e)
+class Sound:
+
+    def __init__(self, window, window_title):
+            self.window = window
+            self.window.title(window_title)
+            self.window.geometry("300x100")
             
+            sound_btn = tk.Button(window, text='SOUND!', bd=5, command=self.sound_an)
+            sound_btn.grid(row=1, column=1, sticky='w')
+            stop_btn = tk.Button(window, text='STOP!', bd=5, command=self.sound_stop)
+            stop_btn.grid(row=1, column=2, sticky='w')
+            center(self.window)
+            self.window.mainloop() 
+             
+    def sound_an(self):
+        sampler.play(s1)
 
-sampler.play(s1)
-Thread(target=read_serial, args=(raw,)).start()
+    def sound_stop(self):
+        sampler.remove(s1)
+        
+        
 
-# while s1.playing:
-#     time.sleep(0.1)
+def main(serial_list):
+    
+    lock = threading.Condition()
+    def update(serial_list):
+       
+        lock.acquire()
+
+        while True:
+            lock.wait()
+            z, val1, val2 = serial_list
+            s1.pitch_shift = int(val1) 
+    threading.Thread(target=update,args=(serial_list,), daemon=True).start()
+    Sound(tk.Tk(), "Sound")
+
+    
+
+if __name__ == '__main__':
+    main([10,10.0,10.0])
+
+
+
