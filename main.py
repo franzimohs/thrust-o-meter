@@ -147,9 +147,9 @@ def main(Port):
                         continue
                 t, r, l = parts
 
-                daten.t = t
-                daten.r = (r - nullwert_r) / (eichwert_r - nullwert_r)
-                daten.l = (l - nullwert_l) / (eichwert_l - nullwert_l)
+                daten.t = int(t)
+                daten.r = (float(r) - nullwert_r) / (eichwert_r - nullwert_r)
+                daten.l = (float(l) - nullwert_l) / (eichwert_l - nullwert_l)
 
                 with daten.lock:
                         daten.lock.notify_all()
