@@ -14,7 +14,7 @@ BASEY        = SCREENHEIGHT * 0.79
 # image, sound and hitmask  dicts
 IMAGES, SOUNDS, HITMASKS = {}, {}, {}
 flag =True
-serial_list = [10,10.0, 10.0]
+daten = [10, 10.0, 10.0] # FIXME kaputt
 
 # list of all possible players (tuple of 3 positions of flap)
 
@@ -57,9 +57,9 @@ except NameError:
     xrange = range
 
 # raw = serial.Serial('COM6', 115200)
-def main(Flag, Serial_list):
-    global SCREEN, FPSCLOCK, flag, serial_list
-    serial_list = Serial_list
+def main(Flag, Daten):
+    global SCREEN, FPSCLOCK, flag, daten
+    daten = Daten
     flag = Flag
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
@@ -140,19 +140,22 @@ def main(Flag, Serial_list):
         showGameOverScreen(crashInfo)
 
 
-def read_serial(flag, serial_list, val=-150):
+def read_serial(flag, daten, val=-150):
 # for i in range(5):
 #     line = raw.readline()
 #     nonl = line.strip()
 #     if 0 == len(nonl): return val
 #     try :
 #         decoded = nonl.decode()
-    t, val1, val2 = serial_list #decoded.split()
-    faktor_benutzte_bildschirmhöhe =  700/362 #400N sollen maximal aufgezeichnet werden
+
+    faktor_benutzte_bildschirmhöhe = 700/362 #400N sollen maximal aufgezeichnet werden
     if flag:
-        valy =val1
-    else: valy= val2
+        valy = daten.r
+    else:
+        valy = daten.l
+
     val = (((float(valy)/64*9.81) * faktor_benutzte_bildschirmhöhe)-140) #1kg=64 g=9,81 Bodenhöhe=200
+
     return val
 
 def showWelcomeAnimation():
@@ -178,7 +181,7 @@ def showWelcomeAnimation():
     playerShmVals = {'val': 0, 'dir': 1}
 
     while True:
-        val = read_serial(flag, serial_list, val)
+        val = read_serial(flag, daten, val)
         if val < -250:
             SOUNDS['wing'].play()
             return {
@@ -329,7 +332,7 @@ def mainGame(movementInfo):
             playerRot = 0#45 
 
         # playerHeight = IMAGES['player'][playerIndex].get_height()
-        val = read_serial(flag,serial_list, val)
+        val = read_serial(flag, daten, val)
 
             # playery += min(playerVelY, BASEY - playery - playerHeight)
         playery = SCREENHEIGHT + val
@@ -416,7 +419,7 @@ def showGameOverScreen(crashInfo):
     cd_gameover = 30
 
     while True:
-        val = read_serial(flag,serial_list, val)
+        val = read_serial(flag, daten, val)
         cd_gameover -= 1
         if (val < -250) and (cd_gameover <= 0):
             return
@@ -605,4 +608,4 @@ def getHitmask(image):
     return mask
 
 if __name__ == '__main__':
-    main(True,[10, 10.0,10.0])
+    main(True,[10, 10.0,10.0]) # FIXME kaputt
