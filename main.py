@@ -135,18 +135,24 @@ def main(Port):
 
     def read_serial(raw):
         global daten
-        daten.lock.acquire()
 
         while True:
             try:
                 line = raw.readline()
                 nonl = line.strip()
                 decoded = nonl.decode()
-                t, r, l = decoded.split()
+
+                parts = decoded.split()
+                if (3 != len(parts):
+                        continue
+                t, r, l = *parts
+
                 daten.t = t
                 daten.r = (r - nullwert_r) / (eichwert_r - nullwert_r)
                 daten.l = (l - nullwert_l) / (eichwert_l - nullwert_l)
-                daten.lock.notify_all()
+
+                with daten.lock:
+                        daten.lock.notify_all()
             except: 
                 pass
     Thread(target=read_serial, args=(raw,), daemon=True).start()
