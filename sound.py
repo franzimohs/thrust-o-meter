@@ -31,8 +31,8 @@ def read_serial(raw):
             decoded = nonl.decode()
             t, val1, val2 = decoded.split()
             f = -(float(val1)/64*9.81)+200 #1kg=64 g=9,81 Bodenhöhe=200
-        except: 
-            pass
+        except Exception as e:
+            print('reader failed:', e)
 Thread(target=read_serial, args=(raw,)).start()
 
 # play. May repeat with different volume values (if done interactively) 
