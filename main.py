@@ -152,8 +152,8 @@ def main(Port):
                 daten.l = (float(l) - nullwert_l) / (eichwert_l - nullwert_l)
                 with daten.lock:
                         daten.lock.notify_all()
-            except: 
-                pass
+            except Exception as e:
+                print('reader failed:', e)
     Thread(target=read_serial, args=(raw,), daemon=True).start()
     ThrustOMeter(tk.Tk(), "Thrust-O-Meter")
 
