@@ -48,21 +48,17 @@ class Sound:
         
         
 
-def main(serial_list):
-    
-    lock = threading.Condition()
-    def update(serial_list):
-       
-        lock.acquire()
+def main(daten):
+    def update(daten):
+        daten.lock.acquire()
 
         while True:
-            lock.wait()
-            z, val1, val2 = serial_list
-            s1.pitch_shift = int(val1) 
-    threading.Thread(target=update,args=(serial_list,), daemon=True).start()
-    Sound(tk.Tk(), "Sound")
+            s1.pitch_shift = int(daten.r)  # FIXME stufig, testen ob float nicht tut
 
-    
+            lock.wait()
+
+    threading.Thread(target=update, args=(daten,), daemon=True).start()
+    Sound(tk.Tk(), "Sound")
 
 if __name__ == '__main__':
     main([10,10.0,10.0])

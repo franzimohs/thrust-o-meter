@@ -9,10 +9,10 @@ import pyqtgraph as pg
 
 
 class App(QtGui.QMainWindow):
-    def __init__(self, serial_list, parent=None):
+    def __init__(self, daten, parent=None):
         super(App, self).__init__(parent)
 
-        self.serial_list = serial_list
+        self.daten = daten
 
         self.mainbox = QtGui.QWidget()
         self.radioL = QtGui.QRadioButton()
@@ -56,13 +56,12 @@ class App(QtGui.QMainWindow):
         self.timer.start(1000/30)  
 
     def _update(self):
-        t, val1, val2 = self.serial_list
         if self.radioL.isChecked():
-            val = val2
+            val = self.daten.l
         elif self.radioR.isChecked():
-            val = val1
+            val = self.daten.r
         else: 
-            val = val1
+            val = self.daten.r
         self.ydata[:-1] = self.ydata[1:]
         self.ydata[-1] = -float(val)/64*9.81
         
@@ -84,22 +83,19 @@ class App(QtGui.QMainWindow):
         
 
 
-def main(serial_list):
-    
+def main(daten):
     app = QtGui.QApplication(sys.argv)
-    thisapp = App(serial_list)
+    thisapp = App(daten)
     thisapp.show()
-    sys.exit(app.exec_())
-    
+    app.exec_()
 
-
-def open_realtimeplot3_from_main(serial_list):
+def open_realtimeplot3_from_main(daten):
     try:
-        main(serial_list)
+        main(daten)
     except KeyboardInterrupt:
         pass
-    
+
 
 
 if __name__ == '__main__':
-    open_realtimeplot3_from_main()
+    open_realtimeplot3_from_main() # FIXME kaputt
