@@ -109,6 +109,6 @@ def main(loaddata, peakHight, plateauHight, plateauLength):
     plt.show()
 
 if __name__ == "__main__":
-    main('franzi', 360, 80, 1600)
+    main('ausgabe/20210529_151717.tom0', 360, 80, 1600)
 
     
