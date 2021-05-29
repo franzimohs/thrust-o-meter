@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import threading, sys
+import threading
 
 import numpy as np
 import tkinter as tk
@@ -14,7 +14,8 @@ class Reader(tk.Frame):
 		self.grid()
 		self.daten = daten
 		self.font = Font(family='monospace')
-
+		self.flag_update = tk.IntVar(value=0)
+		self.ref = tk.IntVar(value=0)
 		outer_frame = tk.Frame(self)
 		f = tk.Frame(outer_frame)
 
@@ -23,10 +24,14 @@ class Reader(tk.Frame):
 		self.fname.grid(row = 0, column = 1)
 		self.timeName = datetime.datetime.now().strftime('%Y%m%d_%H%M%S%z')
 		self.fname.insert(0, self.timeName)
-		self.flag_update = tk.IntVar()
-		tk.Radiobutton(f, text='Rechts!', var=self.flag_update, value=True).grid(row = 0, column = 4)
-		tk.Radiobutton(f, text='Links!', var=self.flag_update, value=False).grid(row = 0, column = 5)
-
+		
+		tk.Radiobutton(f, text='Rechts!', var=self.flag_update, value=0).grid(row = 0, column = 4)
+		tk.Radiobutton(f, text='Links!', var=self.flag_update, value=1).grid(row = 0, column = 5)
+		tk.Radiobutton(f, text='360N', var=self.ref, value=0).grid(row=1, column=3)
+		tk.Radiobutton(f, text='340N', var=self.ref, value=1).grid(row=1, column=4)
+		tk.Radiobutton(f, text='300N', var=self.ref, value=2).grid(row=1, column=5)
+		tk.Radiobutton(f, text='270N', var=self.ref, value=3).grid(row=1, column=6)
+		
 		self.samplecount = tk.Label(f, font=self.font, text='samples')
 		self.samplecount.grid(row = 0, column = 6)
 
@@ -44,6 +49,11 @@ class Reader(tk.Frame):
 
 		self.data = []
 		self.recording = False
+	
+	def name_update(self):
+		self.timeName = datetime.datetime.now().strftime('%Y%m%d_%H%M%S%z')
+		self.fname.delete(0, 'end')
+		self.fname.insert(0, self.timeName)
 
 	def start(self):
 		self.recording = True
@@ -55,22 +65,25 @@ class Reader(tk.Frame):
 		self.recording = False
 		self.btn_start.config(state='normal')
 		self.btn_stop.config(state='disabled')
-		np.savetxt(self.fname.get(), self.data, fmt='%d')
+		np.savetxt('ausgabe/'+self.fname.get()+'.tom'+str(self.ref.get()), self.data, fmt='%d')
 		self.data = []
 		self.samplecount['text'] = 'saved'
+		self.name_update()
+		
 
 	def reader(self):
+		print('bin in reader')
 		self.daten.lock.acquire()
-		print('inreader')
 		while self.recording:
-			if self.flag_update.get():
+			if self.flag_update.get()==0:
+				print('whileifr')
 				val = self.daten.r
 			else:
 				val = self.daten.l
 
-			# -64 == 1kg load g= 9,81 F= m*g
-			self.data.append((self.daten.t, (val/64*9.81)))
-
+			print('vor append')
+			self.data.append((self.daten.t, (val*9.81)))#g= 9,81 F= m*g
+			print('nach append')
 			self.samplecount['text'] = '%d samples' % len(self.data)
 			self.daten.lock.wait()
 
