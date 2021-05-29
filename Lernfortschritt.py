@@ -59,10 +59,38 @@ def plot():
   fig.set_size_inches((9,6.5))
   
 def merge():
-  peak_list0, vorspannung_list0, inzisur_list0, time_list0 = fortschritt('tom0', 360)
-  peak_list1, vorspannung_list1, inzisur_list1, time_list1 = fortschritt('tom1', 330)
-  peak_list2, vorspannung_list2, inzisur_list2, time_list2 = fortschritt('tom2', 300)
-  peak_list3, vorspannung_list3, inzisur_list3, time_list3 = fortschritt('tom3', 270)
+  peak_list0=[]
+  peak_list1=[]
+  peak_list2=[]
+  peak_list3=[]
+  vorspannung_list0=[]
+  vorspannung_list1=[]
+  vorspannung_list2=[]
+  vorspannung_list3=[]
+  inzisur_list0=[]
+  inzisur_list1=[]
+  inzisur_list2=[]
+  inzisur_list3=[]
+  time_list0=[]
+  time_list1=[]
+  time_list2=[]
+  time_list3=[]
+  try:
+    peak_list0, vorspannung_list0, inzisur_list0, time_list0 = fortschritt('tom0', 360)
+  except:
+      pass
+  try:
+    peak_list1, vorspannung_list1, inzisur_list1, time_list1 = fortschritt('tom1', 330)
+  except:
+    pass
+  try:
+    peak_list2, vorspannung_list2, inzisur_list2, time_list2 = fortschritt('tom2', 300)
+  except:
+    pass
+  try:
+    peak_list3, vorspannung_list3, inzisur_list3, time_list3 = fortschritt('tom3', 270)
+  except:
+    pass
   
   peak_fehler_list =sorted(peak_list0 + peak_list1 + peak_list2 + peak_list3)
   vorspannung_fehler_list = sorted(vorspannung_list0 + vorspannung_list1 + vorspannung_list2 + vorspannung_list3)
@@ -70,7 +98,9 @@ def merge():
   time_fehler_list = sorted(time_list0 + time_list1 + time_list2 + time_list3)
   return peak_fehler_list, vorspannung_fehler_list, inzisur_fehler_list, time_fehler_list
 
-
+def main():
+  plot()
+  plt.show()
 
 
 if __name__ == '__main__':

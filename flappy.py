@@ -3,7 +3,6 @@ import random
 import sys
 import pygame
 from pygame.locals import *
-# import serial
 
 
 FPS = 30
@@ -16,23 +15,9 @@ IMAGES, SOUNDS, HITMASKS = {}, {}, {}
 flag =True
 daten = [10, 10.0, 10.0] # FIXME kaputt
 
-# list of all possible players (tuple of 3 positions of flap)
 
 PLAYERS_LIST = ('assets/sprites/bone_upflap.png','assets/sprites/bone_midflap.png','assets/sprites/bone_downflap.png') 
- #),
-#     # blue bird
-#     (
-#         'assets/sprites/bluebird-upflap.png',
-#         'assets/sprites/bluebird-midflap.png',
-#         'assets/sprites/bluebird-downflap.png',
-#     ),
-#      # yellow bird
-#     (
-#         'assets/sprites/yellowbird-upflap.png',
-#         'assets/sprites/yellowbird-midflap.png',
-#         'assets/sprites/yellowbird-downflap.png',
-#     ),
-# )
+ 
 
 # list of backgrounds
 BACKGROUNDS_LIST = (
@@ -148,14 +133,14 @@ def read_serial(flag, daten, val=-150):
 #     try :
 #         decoded = nonl.decode()
 
-    faktor_benutzte_bildschirmhöhe = 700/362 #400N sollen maximal aufgezeichnet werden
+    faktor_benutzte_bildschirmhöhe = 512/340 #400N sollen maximal aufgezeichnet werden
     if flag:
         valy = daten.r
     else:
         valy = daten.l
 
-    val = (((valy*9.81) * faktor_benutzte_bildschirmhöhe)-140) #1kg=64 g=9,81 Bodenhöhe=200
-
+    val = (((-valy*9.81) *faktor_benutzte_bildschirmhöhe)-140) #1kg=64 g=9,81 Bodenhöhe= 140
+    print(val)
     return val
 
 def showWelcomeAnimation():

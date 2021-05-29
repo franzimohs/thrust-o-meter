@@ -93,10 +93,10 @@ class FileComparison:
 def main(loaddata, peakHight, plateauHight, plateauLength):
     ref = createReference(peakHight, plateauHight, plateauLength)
     testdata = np.loadtxt(loaddata)
-    print(testdata)
+    
     filecomp = FileComparison(ref,testdata)
     mergedArray = filecomp.getMergedArrays()
-    print()
+    
     
     
     plt.plot(mergedArray[0],mergedArray[1], 'b-', label = "Reference")

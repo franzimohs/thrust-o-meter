@@ -1,15 +1,15 @@
 import tkinter as tk
 from tkinter import filedialog
 from tkinter.constants import FLAT
-# from Analyse import open_analyse_from_main
 from reader import open_reader_from_main
 from realtimeplot3 import open_realtimeplot3_from_main
-import subprocess
 from flappy import main as flappy
 from threading import Thread, Condition
 import serial
 from FileComparison import main as filecomp
 from sound2 import main as sound
+from Lernfortschritt import main as fortschritt
+
 eichwert_r = 0.00
 eichwert_l = 0.00
 nullwert_r = 0.00
@@ -108,13 +108,13 @@ class ThrustOMeter():
             realtimeplot_btn =tk.Button(window, text="REALTIMEPLOT!", bd='5', command=lambda: open_realtimeplot3_from_main(daten))
             realtimeplot_btn.grid(row=4, column=1, sticky='w')
             
-            game_rdR =tk.Radiobutton(window, text= 'Rechts!', var = self.flag_game, value=False)
+            game_rdR =tk.Radiobutton(window, text= 'Rechts!', var = self.flag_game, value=True)
             game_rdR.grid(row=5, column =2, sticky='w')
-            game_rdL =tk.Radiobutton(window, text = 'Links!', var = self.flag_game, value = True)
+            game_rdL =tk.Radiobutton(window, text = 'Links!', var = self.flag_game, value = False)
             game_rdL.grid(row=5, column=3, sticky='w')
             game_btn =tk.Button(window, text="SPIEL!", bd='5', command=lambda: flappy(self.flag_game.get(), daten))
             game_btn.grid(row=5, column=1, sticky='w')
-            fortschritt_btn =tk.Button(window, text="FORTSCHRITT!", bd='5')
+            fortschritt_btn =tk.Button(window, text="FORTSCHRITT!", bd='5', command=fortschritt)
             fortschritt_btn.grid(row=6, column=1, sticky='w')
             
             self.eichungR_lable=tk.Label(window, text='Rechts')

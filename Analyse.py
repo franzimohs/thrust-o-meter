@@ -12,7 +12,7 @@ class Analyse:
 
 	def __init__(self, rawData):
 
-		self.peakIsNegativ = True                         #Falls ihr die Daten irgendwann umdreht, sodass der Peak nicht nach unten ausschlägt: Setzt das hier auf False
+		self.peakIsNegativ = False                         #Falls ihr die Daten irgendwann umdreht, sodass der Peak nicht nach unten ausschlägt: Setzt das hier auf False
 		self.sliceCount = 0                               #Hier wird mitgezählt wie oft ich den Datensatz zugeschnitten habe, damit ich in keiner Reckrsivendlosschleife ende
 		self.threshold = 10                             #So hoch müssen die Werte mindestsns sein, damit sie relevant sind (kann natürlich bei Bedarf angepasst werden)
 		self.varLenght = 20                               #Auf diese Länge wird jeweils die Varianz berechnet. Mein Tipp: Falls das Plateau für eine Mindestdauer gehalten werden muss, würde ich hier ca die Hälfte dieser Zeit eintragen.
@@ -102,7 +102,7 @@ class Analyse:
 			
 
 		self.varArrayunreduziert = varArr
-		print(varArr[:,1])
+		# print(varArr[:,1])
 		minVar = np.min(varArr[:,1])
 			
 			
@@ -277,7 +277,7 @@ def open_analyse_from_main(loadData=None, **kwargs):
 	textX2 = np.min(analyse.rawDataBackUp[:,0])
 	textY2 = analyse.plateauCorrect[2] + ((analyse.peakCorrect[2] - analyse.plateauCorrect[2]) /2)
 	ax3.text(textX2, textY2, f"Plateau: {analyse.plateauCorrect[2]} \nDelle: {analyse.dentCorrect[2]} \nSpannungsabfall: {analyse.dentDepth} \nSpitze: {analyse.peakCorrect[2]} \nSteigung: {analyse.slope}\nZeit: {analyse.time}")
-	print(rawData)
+	# print(rawData)
 	plt.show()
 
 if '__main__' == __name__:
