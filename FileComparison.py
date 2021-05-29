@@ -53,7 +53,7 @@ class FileComparison:
         meanTimeStep = np.mean(np.abs(timesteps1))
         timestepDiffSum = meanTimeStep -np.mean(np.abs(timesteps2))
         assert timestepDiffSum < 0.05, f"Timesteps differ! Mean of Difference: {timestepDiffSum}"
-        return meanTimeStep
+        return 11 #meanTimeStep
 
     def getMergedArrays(self):
         # start time

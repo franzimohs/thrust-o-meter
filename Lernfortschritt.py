@@ -25,10 +25,10 @@ def fortschritt(endung, peak):
       except Exception as e:
         print('Fehler:'+str(e))
         pass
-      peak_list.append([name[0], analyseData.peak[2]]-peak)
-      vorspannung_list.append([name[0], analyseData.plateau[2]]-(peak/4))
+      peak_list.append([name[0], (analyseData.peak[2]-peak)])
+      vorspannung_list.append([name[0], (analyseData.plateau[2]-(peak/4))])
       inzisur_list.append([name[0], analyseData.dentDepth])
-      time_list.append([name[0], analyseData.time]-150)
+      time_list.append([name[0], (analyseData.time-150)])
   return peak_list, vorspannung_list, inzisur_list, time_list
   
 

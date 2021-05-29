@@ -166,8 +166,8 @@ class Analyse:
 		3. Remove excess data
 		return: Remaining interesting stuff after inverting and trimming.
 		"""
-		if not self.checkTime():
-			raise ValueError("data corrupted (Analyse.cleanUp())")
+		# if not self.checkTime():
+		# 	raise ValueError("data corrupted (Analyse.cleanUp())")
 
 		cleanData = self.invertValues(self.rawData)
 		cleanData = self.trim(cleanData)
