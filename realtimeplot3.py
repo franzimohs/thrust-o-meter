@@ -15,20 +15,14 @@ class App(QtGui.QMainWindow):
         self.daten = daten
 
         self.mainbox = QtGui.QWidget()
-        self.radioL = QtGui.QRadioButton()
-        self.radioR = QtGui.QRadioButton()
-        
+        self.setWindowTitle('Realtimeplot')
        
-        
-        self.radioL.setText('Links!')
-        self.radioR.setText('Rechts!')
         self.setCentralWidget(self.mainbox)
         self.mainbox.setLayout(QtGui.QVBoxLayout())
         
         self.canvas = pg.GraphicsLayoutWidget()
         self.mainbox.layout().addWidget(self.canvas)
-        self.mainbox.layout().addWidget(self.radioL)
-        self.mainbox.layout().addWidget(self.radioR)
+        
        
         self.target = pyqtgraph.InfiniteLine(angle = 0, pos = 300, movable = True, bounds=[100,400])
        
@@ -36,13 +30,21 @@ class App(QtGui.QMainWindow):
         self.label = QtGui.QLabel()
         self.mainbox.layout().addWidget(self.label)
         self.mainbox.layout().addWidget(self.zielhöhe)
-        
+        self.radioL = QtGui.QRadioButton()
+        self.radioR = QtGui.QRadioButton()
+        self.mainbox.layout().addWidget(self.radioL)
+        self.mainbox.layout().addWidget(self.radioR)
+        self.radioL.setText('Links!')
+        self.radioR.setText('Rechts!')
+        self.radioR.setChecked(True)
         
         self.otherplot = self.canvas.addPlot()
       
         self.otherplot.setYRange(0,400)
         self.otherplot.addItem(self.target)
         self.otherplot.hideButtons()
+        self.otherplot.setLabel('left', text='Kraft', units='N')
+        self.otherplot.setLabel('bottom', text='Zeit')
         self.h2 = self.otherplot.plot(pen='y')
         
         self.ydata = np.zeros(1000)
@@ -58,10 +60,10 @@ class App(QtGui.QMainWindow):
     def _update(self):
         if self.radioL.isChecked():
             val = self.daten.l
-        elif self.radioR.isChecked():
+        if self.radioR.isChecked():
             val = self.daten.r
-        else: 
-            val = self.daten.r
+        
+        
         self.ydata[:-1] = self.ydata[1:]
         self.ydata[-1] = val*9.81
         
@@ -76,8 +78,8 @@ class App(QtGui.QMainWindow):
         fps2 = 1.0 / dt
         self.lastupdate = now
         self.fps = self.fps * 0.9 + fps2 * 0.1
-        tx = 'Mean Frame Rate:  {fps:.3f} FPS'.format(fps=self.fps )
-        self.label.setText(tx)
+        # tx = 'Mean Frame Rate:  {fps:.3f} FPS'.format(fps=self.fps )
+        # self.label.setText(tx)
         QtCore.QTimer.singleShot(10, self._update)
         self.counter += 1
         

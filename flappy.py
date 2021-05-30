@@ -1,5 +1,6 @@
 from itertools import cycle
 import random
+from re import S
 import sys
 import pygame
 from pygame.locals import *
@@ -41,7 +42,7 @@ try:
 except NameError:
     xrange = range
 
-# raw = serial.Serial('COM6', 115200)
+
 def main(Flag, Daten):
     global SCREEN, FPSCLOCK, flag, daten
     daten = Daten
@@ -64,8 +65,7 @@ def main(Flag, Daten):
         pygame.image.load('assets/sprites/8.png').convert_alpha(),
         pygame.image.load('assets/sprites/9.png').convert_alpha()
     )
-    # BONEIMAGE = pygame.transform.flip(
-                # pygame.image.load(BONE).convert_alpha(), False, True)
+    
     # game over sprite
     IMAGES['gameover'] = pygame.image.load('assets/sprites/gameover.png').convert_alpha()
     # message sprite for welcome screen
@@ -90,10 +90,9 @@ def main(Flag, Daten):
         randBg = random.randint(0, len(BACKGROUNDS_LIST) - 1)
         IMAGES['background'] = pygame.image.load(BACKGROUNDS_LIST[randBg]).convert()
 
-        # select random player sprites
-        # randPlayer = random.randint(0, len(PLAYERS_LIST) - 1)
+       
         IMAGES['player'] = (
-            pygame.image.load(PLAYERS_LIST[0]).convert_alpha(), #,[randPlayer][0]
+            pygame.image.load(PLAYERS_LIST[0]).convert_alpha(), 
             pygame.image.load(PLAYERS_LIST[1]).convert_alpha(),
             pygame.image.load(PLAYERS_LIST[2]).convert_alpha(),
        )
@@ -111,7 +110,7 @@ def main(Flag, Daten):
             getHitmask(IMAGES['pipe'][0]),
             getHitmask(IMAGES['pipe'][1]),
         )
-        # bone_hitmask = getHitmask(IMAGES["bone"])
+        
         # hitmask for player
         HITMASKS['player'] = (
             getHitmask(IMAGES['player'][0]),
@@ -126,22 +125,19 @@ def main(Flag, Daten):
 
 
 def read_serial(flag, daten, val=-150):
-# for i in range(5):
-#     line = raw.readline()
-#     nonl = line.strip()
-#     if 0 == len(nonl): return val
-#     try :
-#         decoded = nonl.decode()
 
-    faktor_benutzte_bildschirmhöhe = 512/340 #400N sollen maximal aufgezeichnet werden
+
+    faktor_benutzte_bildschirmhöhe = 512/340 
     if flag:
         valy = daten.r
     else:
         valy = daten.l
 
     val = (((-valy*9.81) *faktor_benutzte_bildschirmhöhe)-140) #1kg=64 g=9,81 Bodenhöhe= 140
-    print(val)
+    
     return val
+
+
 
 def showWelcomeAnimation():
     """Shows welcome screen animation of flappy bird"""
@@ -217,6 +213,7 @@ def mainGame(movementInfo):
     # get 2 new pipes to add to upperPipes lowerPipes list
     newPipe1 = getDownPipe()
     newPipe2 = getRandomPipe()
+    random_bone = get_random_bone()
 
     # list of upper pipes
     upperPipes = [
@@ -229,7 +226,10 @@ def mainGame(movementInfo):
         {'x': SCREENWIDTH + 200, 'y': newPipe1[1]['y']},
         {'x': SCREENWIDTH + 200 + (SCREENWIDTH / 2), 'y': newPipe2[1]['y']},
     ]
-
+    hit_pipes = [
+        {'x': SCREENWIDTH +200+(SCREENWIDTH*0.75), 'y': random_bone[0]['y']},
+        {'x': 2*SCREENWIDTH +200 +(SCREENWIDTH*0.75), 'y': random_bone[0]['y'] }
+    ]
     pipeVelX = -4
 
     # player velocity, max velocity, downward accleration, accleration on flap
@@ -258,9 +258,9 @@ def mainGame(movementInfo):
                     playerFlapped = True
                     SOUNDS['wing'].play()
 
-        hit_pipes = [ {"x": pipe["x"]+SCREENWIDTH*0.25, "y": -280} for i, pipe in enumerate(upperPipes) if i % 2 != wechsel_pipe]
-        if not wechsel_pipe:
-            hit_pipes =[{"x": upperPipes[0]["x"]-SCREENWIDTH*0.25, "y": -280 }] + hit_pipes
+        # hit_pipes = [ {"x": pipe["x"]+SCREENWIDTH*0.25, "y": -random_bone} for i, pipe in enumerate(upperPipes) if i % 2 != wechsel_pipe]
+        # if not wechsel_pipe:
+        #     hit_pipes =[{"x": upperPipes[0]["x"]-SCREENWIDTH*0.25, "y": -280 }] + hit_pipes
 
         # check for crash here
         crashTest = checkCrash({'x': playerx, 'y': playery, 'index': playerIndex},
@@ -271,7 +271,9 @@ def mainGame(movementInfo):
         if hit and (hit_cd_counter<=0):
             score += 1
             SOUNDS['point'].play()
-            hit_cd_counter=hit_cd       
+            hit_cd_counter=hit_cd      
+            if score % 10 ==0:
+                pipeVelX -=1
         
         if crashTest[0]:
             return {
@@ -285,25 +287,14 @@ def mainGame(movementInfo):
                 'playerRot': playerRot
             }
 
-        # # check for score
-        # playerMidPos = playerx + IMAGES['player'][0].get_width() / 2
-        # for pipe in upperPipes:
-        #     pipeMidPos = pipe['x'] + IMAGES['pipe'][0].get_width() / 2
-        #     if pipeMidPos <= playerMidPos < pipeMidPos + 4:
-        #         # if score > 0:
-        #         #     score-=1
-        #         # score += 1
-        #         # SOUNDS['point'].play()
-
+        
         # playerIndex basex change
         if (loopIter + 1) % 3 == 0:
             playerIndex = next(playerIndexGen)
         loopIter = (loopIter + 1) % 30
         basex = -((-basex + 100) % baseShift)
 
-        # rotate the player
-        # if playerRot > -90:
-            # playerRot -= playerVelRot
+        
 
         # player's movement
         if playerVelY < playerMaxVelY and not playerFlapped:
@@ -312,7 +303,7 @@ def mainGame(movementInfo):
             playerFlapped = False
 
             # more rotation to cover the threshold (calculated in visible rotation)
-            playerRot = 0#45 
+            playerRot = 0
 
         # playerHeight = IMAGES['player'][playerIndex].get_height()
         val = read_serial(flag, daten, val)
@@ -325,17 +316,24 @@ def mainGame(movementInfo):
             uPipe['x'] += pipeVelX
             lPipe['x'] += pipeVelX
 
+        for hPipe in hit_pipes:
+            hPipe['x'] +=pipeVelX
+
         
        
 
         # add new pipe when first pipe is about to touch left of screen
         if (len(upperPipes) > 0) and (0 < upperPipes[0]['x'] < 5):
+            
             if wechsel_pipe:
                 newPipe = getRandomPipe()
+                newBone = get_random_bone()
+                hit_pipes.append(newBone)
             else:
                 newPipe = getDownPipe()
             upperPipes.append(newPipe[0])
             lowerPipes.append(newPipe[1])
+            
     
 
             
@@ -348,7 +346,8 @@ def mainGame(movementInfo):
             upperPipes.pop(0)
             lowerPipes.pop(0)
             wechsel_pipe= not wechsel_pipe
-
+        if len(hit_pipes) > 0 and hit_pipes[0]['x'] < - IMAGES['bone'][0].get_width():
+            hit_pipes.pop(0)
         # draw sprites
         SCREEN.blit(IMAGES['background'], (0,0))
 
@@ -433,6 +432,8 @@ def showGameOverScreen(crashInfo):
         for uPipe, lPipe in zip(upperPipes, lowerPipes):
             SCREEN.blit(IMAGES['pipe'][0], (uPipe['x'], uPipe['y']))
             SCREEN.blit(IMAGES['pipe'][1], (lPipe['x'], lPipe['y']))
+        
+        
 
         SCREEN.blit(IMAGES['base'], (basex, BASEY))
         showScore(score)
@@ -457,6 +458,13 @@ def playerShm(playerShm):
          playerShm['val'] += 1
     else:
         playerShm['val'] -= 1
+
+def get_random_bone():
+    random_bone= -random.randrange(200,280)
+    return [
+        {'x': SCREENWIDTH +60, 'y': random_bone},
+        
+    ]
 
 
 def getRandomPipe():
@@ -589,5 +597,3 @@ def getHitmask(image):
             mask[x].append(bool(image.get_at((x,y))[3]))
     return mask
 
-if __name__ == '__main__':
-    main(True,[10, 10.0,10.0]) # FIXME kaputt
