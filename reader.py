@@ -10,7 +10,7 @@ import datetime
 class Reader(tk.Frame):
 	def __init__(self, daten, master=None):
 		tk.Frame.__init__(self, master)
-		if hasattr(master, 'title'): master.title('reader')
+		if hasattr(master, 'title'): master.title('Aufnahme')
 		self.grid()
 		self.daten = daten
 		self.font = Font(family='monospace')
@@ -24,13 +24,14 @@ class Reader(tk.Frame):
 		self.fname.grid(row = 0, column = 1)
 		self.timeName = datetime.datetime.now().strftime('%Y%m%d_%H%M%S%z')
 		self.fname.insert(0, self.timeName)
-		
+		tk.Label(f, font=self.font, text='Maximalkraft:').grid(row = 1, column=2)
 		tk.Radiobutton(f, text='Rechts!', var=self.flag_update, value=0).grid(row = 0, column = 4)
 		tk.Radiobutton(f, text='Links!', var=self.flag_update, value=1).grid(row = 0, column = 5)
 		tk.Radiobutton(f, text='360N', var=self.ref, value=0).grid(row=1, column=3)
 		tk.Radiobutton(f, text='340N', var=self.ref, value=1).grid(row=1, column=4)
 		tk.Radiobutton(f, text='300N', var=self.ref, value=2).grid(row=1, column=5)
 		tk.Radiobutton(f, text='270N', var=self.ref, value=3).grid(row=1, column=6)
+		tk.Radiobutton(f, text='ohne Referenz', var=self.ref, value=4).grid(row=1, column=7)
 		self.ref.set(0)
 		self.flag_update.set(0)
 		

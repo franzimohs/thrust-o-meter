@@ -10,10 +10,12 @@ from FileComparison import main as filecomp
 from sound2 import main as sound
 from Lernfortschritt import main as fortschritt
 
-eichwert_r = 0.00
-eichwert_l = 0.00
+eichwert_r = -62
+eichwert_l = -62
 nullwert_r = 0.00
 nullwert_l = 0.00
+r = 0.00
+l = 0.00
 
 class Daten():
         def __init__(self):
@@ -46,20 +48,30 @@ def center(win):
 class ThrustOMeter():
         def browsefunc(self):
             self.filename = filedialog.askopenfilename()
-            self.pathlabel.config(text=self.filename)
+            pfad_ordner, pfad_datei =self.filename.split('ausgabe/')
+            datei, self.endung=pfad_datei.split('.')
+            self.pathlabel.config(text=datei)
             self.analyse_btn.config(state='normal')
+            self.ohne_ref_btn.config(state='normal')
+            self.peak= self.welcher_peak()
+            
 
-        def eichung(self, daten):
-            global eichwert_r, eichwert_l
+        def eichung(self):
+           
+            
             if self.eichungwechsel:
-                eichwert_r = daten.r
-                self.eichungR_lable.config(text=f"Rechts: {str(eichwert_r)}")
+                self.eichungR_entry.delete(0, 'end')
+                self.eichungR_entry.insert(0,str(r))
+                #daten.r
+                # self.eichungR_lable.config(text=f"Rechts: {str(eichwert_r)}")
                 self.eichungwechsel = False
                 self.eichung_btn.config(text='Eichung 1kg Links')
             else:
-                eichwert_l = daten.l
-                self.eichungL_lable.config()
-                self.eichungL_lable.config(text=f"Links: {str(eichwert_l)}")
+                self.eichungL_entry.delete(0, 'end')
+                self.eichungL_entry.insert(0,str(l))
+                eichwert_l = l
+                # self.eichungL_lable.config()
+                # self.eichungL_lable.config(text=f"Links: {str(eichwert_l)}")
                 self.eichungwechsel = True
                 self.eichung_btn.config(text='Eichung 1kg Rechts')
 
@@ -69,65 +81,107 @@ class ThrustOMeter():
             nullwert_l = daten.l
 
         def speichern(self):
+            global eichwert_r, eichwert_l
+            eichwert_l =float(self.eichungL_entry.get())
+            eichwert_r =float(self.eichungR_entry.get())
             with open('Eichwert', 'w') as speicher:
                 speicher.write(f'{eichwert_r}\n{eichwert_l}\n')
+            self.eichungR_entry.delete(0,'end')
+            self.eichungL_entry.delete(0,'end')
+            self.eichungR_entry.insert(0, 'gespeichert!')
+            self.eichungL_entry.insert(0,'gespeichert!')
 
         def entspeichern(self):
             global eichwert_r, eichwert_l
             with open('Eichwert', 'r') as speicher:
                 eichwert_r = float(speicher.readline().strip())
                 eichwert_l = float(speicher.readline().strip())
+        
+        def welcher_peak(self):
+            if self.endung == 'tom0':
+                peak =360
+            if self.endung == 'tom1':
+                peak=330
+            if self.endung == 'tom2':
+                peak=300
+            if self.endung== 'tom3':
+                peak=270
+            return peak
+
 
         def __init__(self, window, window_title):
             self.window = window
             self.window.title(window_title)
-            self.window.geometry("700x300")
-            self.entspeichern()
-        
+            self.window.geometry("500x450")
+            try:
+                self.entspeichern()
+            except Exception as e:
+                print('Kann nicht entspeichern:'+ str(e))
+                pass
             
             self.pathlabel = tk.Label(window)
-            self.pathlabel.grid(row=0, column=0, sticky='e')
+            self.pathlabel.grid(row=0, column=0)
             self.flag_game = tk.BooleanVar()
             self.eichungwechsel = True
-            browsebutton = tk.Button(window, text="Browse", command=self.browsefunc)
-            browsebutton.grid(row=1, padx=121, column=0)
-            tk.Label(window, text='Maximalkraft: ').grid(row=0, column=2, sticky='w')
-            tk.Label(window, text='Vorspannungskraft: ').grid(row=1, column=2, sticky='w')
-            tk.Label(window, text='Vorspannungslänge: ').grid(row=2, column=2, sticky='w')
+            browsebutton = tk.Button(window, text="Browse",bd='5', command=self.browsefunc)
+            browsebutton.grid(row=1, padx=40, column=0)
+            
+            tk.Label(window, text='Maximalkraft [N]:\n (nur Freie Anaylse)').grid(row=0, column=2, sticky='w')
+            tk.Label(window, text='Vorspannungskraft [N]:\n (nur Freie Anaylse)').grid(row=1, column=2, sticky='w')
+            tk.Label(window, text='Vorspannungslänge [ms]: ').grid(row=2, column=2, sticky='w')
 
             plateauH_entry =tk.Entry(window, width=6)
             plateauH_entry.grid(row=1, column=3, sticky='w')
+            plateauH_entry.insert(0,'80')
+            
             peak_entry =tk.Entry(window, width=6)
             peak_entry.grid(row=0, column= 3, sticky='w')
+            peak_entry.insert(0,'360')
+
             plateauL_entry =tk.Entry(window, width=6)
             plateauL_entry.grid(row=2, column=3, sticky='w')
-            self.analyse_btn =tk.Button(window, text="ANALYSE!", bd='5', command=lambda: filecomp(self.filename,float(peak_entry.get()), float(plateauH_entry.get()), float(plateauL_entry.get())), state='disabled')
-            self.analyse_btn.grid(row=0, column=1, sticky='w' )
-            reader_btn =tk.Button(window, text="READER!", bd='5', command=lambda: open_reader_from_main(daten))
-            reader_btn.grid(row=3, column=1, sticky='w')
-            realtimeplot_btn =tk.Button(window, text="REALTIMEPLOT!", bd='5', command=lambda: open_realtimeplot3_from_main(daten))
-            realtimeplot_btn.grid(row=4, column=1, sticky='w')
+            plateauL_entry.insert(0,'1000')
+
+            self.analyse_btn =tk.Button(window, text="ANALYSE!", bd='5', command=lambda: filecomp(self.filename,self.peak, (self.peak/4), float(plateauL_entry.get())), state='disabled')
+            self.analyse_btn.grid(row=0, column=1, sticky='w' , pady=10)
+            self.ohne_ref_btn = tk.Button(window, text='Freie Analyse!', bd='5', command=lambda: filecomp(self.filename, peak_entry.get(), plateauH_entry.get()), state='disabled')
+            self.ohne_ref_btn.grid(row=1, column=1, sticky='w')
+            reader_btn =tk.Button(window, text="AUFNAHME!", bd='5', command=lambda: (self.nullung(daten),open_reader_from_main(daten)))
+            reader_btn.grid(row=3, column=1, sticky='w', pady= 5)
+
+            realtimeplot_btn =tk.Button(window, text="REALTIMEPLOT!", bd='5', command=lambda:(self.nullung(daten), open_realtimeplot3_from_main(daten)))
+            realtimeplot_btn.grid(row=4, column=1, sticky='w',pady=5)
             
             game_rdR =tk.Radiobutton(window, text= 'Rechts!', var = self.flag_game, value=True)
             game_rdR.grid(row=5, column =2, sticky='w')
+
             game_rdL =tk.Radiobutton(window, text = 'Links!', var = self.flag_game, value = False)
             game_rdL.grid(row=5, column=3, sticky='w')
-            game_btn =tk.Button(window, text="SPIEL!", bd='5', command=lambda: flappy(self.flag_game.get(), daten))
-            game_btn.grid(row=5, column=1, sticky='w')
+
+            game_btn =tk.Button(window, text="SPIEL!", bd='5', command=lambda:(self.nullung(daten), flappy(self.flag_game.get(), daten)))
+            game_btn.grid(row=5, column=1, sticky='w', pady=5)
+
             fortschritt_btn =tk.Button(window, text="FORTSCHRITT!", bd='5', command=fortschritt)
-            fortschritt_btn.grid(row=6, column=1, sticky='w')
+            fortschritt_btn.grid(row=6, column=1, sticky='w', pady=5)
+
+            sound_btn= tk.Button(window, text='SOUND!', bd='5', command=lambda: (self.nullung(daten),sound(daten)))
+            sound_btn.grid(row=7, column=1, sticky='w', pady=5)
+
+            self.eichungR_lable=tk.Label(window, text='Rechts:')
+            self.eichungR_lable.grid(row=8, column=0)
+            self.eichungL_lable=tk.Label(window, text='Links:')
+            self.eichungL_lable.grid(row=10, column=0)
+            self.eichungR_entry= tk.Entry(window, width=15)
+            self.eichungR_entry.grid(row=9, column=0)
+            self.eichungL_entry=tk.Entry(window, width=15)
+            self.eichungL_entry.grid(row=11, column=0)
             
-            self.eichungR_lable=tk.Label(window, text='Rechts')
-            self.eichungR_lable.grid(row=7, column=0, sticky='w')
-            self.eichungL_lable=tk.Label(window, text='Links')
-            self.eichungL_lable.grid(row=8, column=0, sticky='w')
+            self.eichung_btn=tk.Button(window, text='Eichung 1kg Rechts', bd='5', command=lambda: self.eichung())
+            self.eichung_btn.grid(row=10, column= 1, sticky='w')
+
+            speichern_btn = tk.Button(window, text='SAVE!',bd='5', command=self.speichern)
+            speichern_btn.grid(row=10, column=2, sticky='w', padx=10)
             
-            self.eichung_btn=tk.Button(window, text='Eichung 1kg Rechts', bd='5', command=lambda: self.eichung(daten))
-            self.eichung_btn.grid(row=7, column= 1, sticky='w')
-            speichern_btn = tk.Button(window, text='speichern!',bd='5', command=self.speichern)
-            speichern_btn.grid(row=7, column=2, sticky='w')
-            sound_btn= tk.Button(window, text='SOUND!', bd='5', command=lambda: sound(daten) )
-            sound_btn.grid(row=8, column=1, sticky='w')
 
             center(self.window)
             self.window.mainloop()    
@@ -137,7 +191,7 @@ def main(Port):
     raw = serial.Serial(Port, 115200)
 
     def read_serial(raw):
-        global daten
+        global daten, r, l
 
         while True:
             try:
