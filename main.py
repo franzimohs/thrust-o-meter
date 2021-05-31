@@ -200,6 +200,7 @@ def main(Port):
                 decoded = nonl.decode()
 
                 parts = decoded.split()
+                
                 if (3 != len(parts)):
                         continue
                 t, r, l = parts

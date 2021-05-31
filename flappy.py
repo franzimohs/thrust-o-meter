@@ -14,7 +14,7 @@ BASEY        = SCREENHEIGHT * 0.79
 # image, sound and hitmask  dicts
 IMAGES, SOUNDS, HITMASKS = {}, {}, {}
 flag =True
-daten = [10, 10.0, 10.0] # FIXME kaputt
+daten = [10, 10.0, 10.0] 
 
 
 PLAYERS_LIST = ('assets/sprites/bone_upflap.png','assets/sprites/bone_midflap.png','assets/sprites/bone_downflap.png') 
@@ -101,7 +101,7 @@ def main(Flag, Daten):
         pipeindex = random.randint(0, len(PIPES_LIST) - 1)
         IMAGES['pipe'] = (
             pygame.transform.flip(
-                pygame.image.load(PIPES_LIST[pipeindex]).convert_alpha(), False, True),
+            pygame.image.load(PIPES_LIST[pipeindex]).convert_alpha(), False, True),
             pygame.image.load(PIPES_LIST[pipeindex]).convert_alpha(),
         )
         IMAGES['bone'] = pygame.transform.flip(pygame.image.load(BONE).convert_alpha(), False, True)
@@ -127,13 +127,13 @@ def main(Flag, Daten):
 def read_serial(flag, daten, val=-150):
 
 
-    faktor_benutzte_bildschirmhöhe = 512/340 
+    faktor_maximalkraft = (SCREENHEIGHT-140)/200
     if flag:
-        valy = daten.r
+        valy = daten.r*9.81
     else:
-        valy = daten.l
+        valy = daten.l*9.81
 
-    val = (((-valy*9.81) *faktor_benutzte_bildschirmhöhe)-140) #1kg=64 g=9,81 Bodenhöhe= 140
+    val =-(valy *faktor_maximalkraft)
     
     return val
 
@@ -163,7 +163,7 @@ def showWelcomeAnimation():
 
     while True:
         val = read_serial(flag, daten, val)
-        if val < -250:
+        if val < -50:
             SOUNDS['wing'].play()
             return {
                 'playery': playery + playerShmVals['val'],
@@ -226,28 +226,30 @@ def mainGame(movementInfo):
         {'x': SCREENWIDTH + 200, 'y': newPipe1[1]['y']},
         {'x': SCREENWIDTH + 200 + (SCREENWIDTH / 2), 'y': newPipe2[1]['y']},
     ]
-    hit_pipes = [
+    # list of bones 
+    bones = [
         {'x': SCREENWIDTH +200+(SCREENWIDTH*0.75), 'y': random_bone[0]['y']},
-        {'x': 2*SCREENWIDTH +200 +(SCREENWIDTH*0.75), 'y': random_bone[0]['y'] }
+        {'x': 2*SCREENWIDTH +200 +(SCREENWIDTH*0.75)+10, 'y': random_bone[0]['y'] }
     ]
     pipeVelX = -4
 
-    # player velocity, max velocity, downward accleration, accleration on flap
+    
     playerVelY    =  -9   # player's velocity along Y, default same as playerFlapped
     playerMaxVelY =  10   # max vel along Y, max descend speed
-    # playerMinVelY =  -8   # min vel along Y, max ascend speed
+    
     playerAccY    =   1   # players downward accleration
     playerRot     =  0   # player's rotation
-    # playerVelRot  =   3   # angular speed
+   
     playerRotThr  =  20   # rotation threshold
     playerFlapAcc =  -9   # players speed on flapping
     playerFlapped = False # True when player flaps
-    # is_set = False
+    
     val = -150
     
     hit_cd = 25
     hit_cd_counter=0
     wechsel_pipe = False
+
     while True:
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
@@ -258,15 +260,13 @@ def mainGame(movementInfo):
                     playerFlapped = True
                     SOUNDS['wing'].play()
 
-        # hit_pipes = [ {"x": pipe["x"]+SCREENWIDTH*0.25, "y": -random_bone} for i, pipe in enumerate(upperPipes) if i % 2 != wechsel_pipe]
-        # if not wechsel_pipe:
-        #     hit_pipes =[{"x": upperPipes[0]["x"]-SCREENWIDTH*0.25, "y": -280 }] + hit_pipes
+        
 
         # check for crash here
         crashTest = checkCrash({'x': playerx, 'y': playery, 'index': playerIndex},
                                upperPipes, lowerPipes)
         hit=check_hit({'x': playerx, 'y': playery, 'index': playerIndex},
-                               hit_pipes)
+                               bones)
         hit_cd_counter-=1
         if hit and (hit_cd_counter<=0):
             score += 1
@@ -302,22 +302,22 @@ def mainGame(movementInfo):
         if playerFlapped:
             playerFlapped = False
 
-            # more rotation to cover the threshold (calculated in visible rotation)
+            # no rotation needed
             playerRot = 0
 
         # playerHeight = IMAGES['player'][playerIndex].get_height()
         val = read_serial(flag, daten, val)
 
-            # playery += min(playerVelY, BASEY - playery - playerHeight)
-        playery = SCREENHEIGHT + val
+            # playery 
+        playery = SCREENHEIGHT -140 + val
             
         # move pipes to left
         for uPipe, lPipe in zip(upperPipes, lowerPipes):
             uPipe['x'] += pipeVelX
             lPipe['x'] += pipeVelX
 
-        for hPipe in hit_pipes:
-            hPipe['x'] +=pipeVelX
+        for bone in bones:
+            bone['x'] +=pipeVelX
 
         
        
@@ -327,13 +327,15 @@ def mainGame(movementInfo):
             
             if wechsel_pipe:
                 newPipe = getRandomPipe()
-                newBone = get_random_bone()
-                hit_pipes.append(newBone)
+                
             else:
                 newPipe = getDownPipe()
             upperPipes.append(newPipe[0])
             lowerPipes.append(newPipe[1])
             
+        if (len(bones)==1) and (0< bones[0]['x']<5):
+            newBone = get_random_bone()   
+            bones.extend(newBone)
     
 
             
@@ -346,16 +348,17 @@ def mainGame(movementInfo):
             upperPipes.pop(0)
             lowerPipes.pop(0)
             wechsel_pipe= not wechsel_pipe
-        if len(hit_pipes) > 0 and hit_pipes[0]['x'] < - IMAGES['bone'][0].get_width():
-            hit_pipes.pop(0)
+        if len(bones) > 0 and bones[0]['x'] < -IMAGES['bone'].get_width():
+            bones.pop(0)
         # draw sprites
         SCREEN.blit(IMAGES['background'], (0,0))
 
         
         
-
-        for hit_pipe in hit_pipes:
-            SCREEN.blit(IMAGES["bone"], (hit_pipe['x'], hit_pipe['y']))
+        
+        for hit_pipe in bones:
+            SCREEN.blit(IMAGES['bone'], (hit_pipe['x'], hit_pipe['y']))
+        
  
         for uPipe, lPipe in zip(upperPipes, lowerPipes):
             SCREEN.blit(IMAGES['pipe'][0], (uPipe['x'], uPipe['y']))
@@ -403,7 +406,7 @@ def showGameOverScreen(crashInfo):
     while True:
         val = read_serial(flag, daten, val)
         cd_gameover -= 1
-        if (val < -250) and (cd_gameover <= 0):
+        if (val < -50) and (cd_gameover <= 0):
             return
 
         for event in pygame.event.get():
@@ -462,7 +465,7 @@ def playerShm(playerShm):
 def get_random_bone():
     random_bone= -random.randrange(200,280)
     return [
-        {'x': SCREENWIDTH +60, 'y': random_bone},
+        {'x': SCREENWIDTH +10, 'y': random_bone},
         
     ]
 
@@ -542,7 +545,7 @@ def checkCrash(player, upperPipes, lowerPipes):
 
     return [False, False]
 
-def check_hit(player, hit_pipes):
+def check_hit(player, bones):
     """returns True if player collders with base or pipes."""
     pi = player['index']
     player['w'] = IMAGES['player'][0].get_width()
@@ -555,8 +558,8 @@ def check_hit(player, hit_pipes):
     pipeW = IMAGES['pipe'][0].get_width()
     pipeH = IMAGES['pipe'][0].get_height()
 
-    for hit_pipe in hit_pipes:
-        # upper and lower pipe rects
+    
+    for hit_pipe in bones:
         uPipeRect = pygame.Rect(hit_pipe['x'], hit_pipe['y'] -80, pipeW, pipeH)
 
         # player and upper/lower pipe hitmasks
@@ -571,6 +574,7 @@ def check_hit(player, hit_pipes):
             return True
 
     return False
+    
 
 def pixelCollision(rect1, rect2, hitmask1, hitmask2):
     """Checks if two objects collide and not just their rects"""

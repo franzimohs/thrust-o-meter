@@ -47,7 +47,7 @@ class App(QtGui.QMainWindow):
         self.otherplot.setLabel('bottom', text='Zeit')
         self.h2 = self.otherplot.plot(pen='y')
         
-        self.ydata = np.zeros(1000)
+        self.ydata = np.zeros(100)
        
         self.counter = 0
         self.fps = 0.
@@ -78,9 +78,7 @@ class App(QtGui.QMainWindow):
         fps2 = 1.0 / dt
         self.lastupdate = now
         self.fps = self.fps * 0.9 + fps2 * 0.1
-        # tx = 'Mean Frame Rate:  {fps:.3f} FPS'.format(fps=self.fps )
-        # self.label.setText(tx)
-        QtCore.QTimer.singleShot(10, self._update)
+        
         self.counter += 1
         
 
