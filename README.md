@@ -97,3 +97,14 @@ das Massestück nun auf die linke Seite des Beckens. Drücke den Button *Eichung
 **CC Franziska Mohs, 2021**
 
 
+## Abhängigkeiten(Python)
+
+Thrust-O-Meter basiert auf folgenden Bibliotheken:
+
+* [pygame](https://github.com/pygame/)
+* [aupyom](https://github.com/pierre-rouanet/aupyom)
+* [numpy](https://github.com/numpy/numpy)
+* [scipy](https://github.com/scipy/scipy)
+* [matplotlib](https://github.com/matplotlib/matplotlib)
+* [pyqtgraph](https://github.com/pyqtgraph/pyqtgraph)
+* [pyserial](https://github.com/pyserial/pyserial)
