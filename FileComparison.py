@@ -57,7 +57,7 @@ class FileComparison:
         meanTimeStep = np.mean(np.abs(timesteps1))
         timestepDiffSum = meanTimeStep -np.mean(np.abs(timesteps2))
         assert timestepDiffSum < 0.05, f"Timesteps differ! Mean of Difference: {timestepDiffSum}"
-        return 11 #meanTimeStep
+        return meanTimeStep
 
     def getMergedArrays(self):
         # start time
@@ -118,6 +118,6 @@ def main(loaddata, peakHight, plateauHight, plateauLength):
     plt.show()
 
 if __name__ == "__main__":
-    main('franzi', 360, 80, 1600)
+    main('ausgabe/20210529_151717.tom0', 360, 80, 1600)
 
     

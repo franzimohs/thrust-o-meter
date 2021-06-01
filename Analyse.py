@@ -167,13 +167,50 @@ class Analyse:
 		3. Remove excess data
 		return: Remaining interesting stuff after inverting and trimming.
 		"""
-		# if not self.checkTime():
+		#if not self.checkTime():
 		# 	raise ValueError("data corrupted (Analyse.cleanUp())")
 
 		cleanData = self.invertValues(self.rawData)
 		cleanData = self.trim(cleanData)
+		cleanData = self.correctTimstamps(cleanData)
 
 		return cleanData
+	
+	def correctTimstamps(self, cleanData):
+		firstTimestamp = cleanData[0,0]
+		lastTimestamp = cleanData[-1,0]
+		neededSlots = int((lastTimestamp -firstTimestamp) // 11)
+
+		currentIndex = 1
+
+		correctedArr = np.zeros((neededSlots,2))
+		correctedArr[0,0] = cleanData[0,0]
+		correctedArr[0,1] = cleanData[0,1]
+
+		for i in range(cleanData.shape[0] -1):
+			if currentIndex >= neededSlots:
+				break
+			if cleanData[i,0] == cleanData[i+1,0] +11:
+				correctedArr[currentIndex,0] = cleanData[i+1,0]
+				correctedArr[currentIndex,1] = cleanData[i+1,1]
+				currentIndex +=1
+			elif cleanData[i,0] == cleanData[i+1,0]:
+				continue
+			else:
+				for k in range(int((cleanData[i+1,0] - cleanData[i,0]) // 11 -1)):
+					correctedArr[currentIndex,0] = correctedArr[currentIndex -1,0] +11
+					correctedArr[currentIndex,1] = correctedArr[currentIndex-1,1]
+					currentIndex +=1
+				
+				correctedArr[currentIndex,0] = cleanData[i+1,0]
+				correctedArr[currentIndex,1] = cleanData[i+1,1]
+				currentIndex +=1
+		
+		assert currentIndex == neededSlots, f"currentIndex: {currentIndex}, neededSlots: {neededSlots}"
+		return correctedArr
+			
+
+
 
 	def checkTime(self):
 		"""
