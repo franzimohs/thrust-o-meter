@@ -10,10 +10,11 @@ import pyqtgraph as pg
 
 
 class App(QtGui.QMainWindow):
-    def __init__(self, daten, parent=None):
+    def __init__(self, daten, callback, parent=None):
         super(App, self).__init__(parent)
-        self.setWindowIcon(QtGui.QIcon(r'C:\Users\Franziska\Desktop\Bachelorthesis\git\thrust-o-meter\assets\bone.ico'))
+        self.setWindowIcon(QtGui.QIcon('assets/bone.ico'))
         self.daten = daten
+        self.callback = callback 
 
         self.mainbox = QtGui.QWidget()
         self.setWindowTitle('Real-Time-Plot')
@@ -57,6 +58,11 @@ class App(QtGui.QMainWindow):
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self._update)
         self.timer.start(1000/30)  
+    
+    def closeEvent(self, event):
+        self.callback()
+        event.accept()
+
 
     def _update(self):
         if self.radioL.isChecked():
@@ -84,15 +90,15 @@ class App(QtGui.QMainWindow):
         
 
 
-def main(daten):
+def main(daten, callback):
     app = QtGui.QApplication(sys.argv)
-    thisapp = App(daten)
+    thisapp = App(daten, callback)
     thisapp.show()
     app.exec_()
 
-def open_realtimeplot3_from_main(daten):
+def open_realtimeplot3_from_main(daten, callback):
     try:
-        main(daten)
+        main(daten, callback)
     except KeyboardInterrupt:
         pass
 

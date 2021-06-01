@@ -64,30 +64,28 @@ class ThrustOMeter():
             if self.eichungwechsel:
                 self.eichungR_entry.delete(0, 'end')
                 self.eichungR_entry.insert(0,str(r))
-                #daten.r
-                # self.eichungR_lable.config(text=f"Rechts: {str(eichwert_r)}")
                 self.eichungwechsel = False
                 self.eichung_btn.config(text='Eichung 1kg Links')
             else:
                 self.eichungL_entry.delete(0, 'end')
                 self.eichungL_entry.insert(0,str(l))
-                eichwert_l = l
-                # self.eichungL_lable.config()
-                # self.eichungL_lable.config(text=f"Links: {str(eichwert_l)}")
                 self.eichungwechsel = True
                 self.eichung_btn.config(text='Eichung 1kg Rechts')
+            
         
         def disable_btn(self):
             self.game_btn.config(state='disabled')
             self.sound_btn.config(state='disabled')
             self.reader_btn.config(state='disabled')
             self.eichung_btn.config(state='disabled')
+            self.realtimeplot_btn.config(state='disabled')
        
         def enable_btn(self):
             self.game_btn.config(state='normal')
             self.sound_btn.config(state='normal')
             self.reader_btn.config(state='normal')
             self.eichung_btn.config(state='normal')
+            self.realtimeplot_btn.config(state='normal')
 
 
 
@@ -129,12 +127,14 @@ class ThrustOMeter():
             self.window = window
             self.window.title(window_title)
             self.window.geometry("500x450")
+        
             try:
                 self.entspeichern()
             except Exception as e:
                 print('Kann nicht entspeichern:'+ str(e))
                 pass
-            window.iconbitmap(r'C:\Users\Franziska\Desktop\Bachelorthesis\git\thrust-o-meter\assets\bone.ico')
+            self.callback = self.enable_btn
+            window.iconbitmap('assets/bone.ico')
             self.pathlabel = tk.Label(window)
             self.pathlabel.grid(row=0, column=0)
             self.flag_game = tk.BooleanVar()
@@ -162,10 +162,10 @@ class ThrustOMeter():
             self.analyse_btn.grid(row=0, column=1, sticky='w' , pady=10)
             self.ohne_ref_btn = tk.Button(window, text='FREIE ANALYSE!', bd='5', command=lambda: filecomp(self.filename, peak_entry.get(), plateauH_entry.get()), state='disabled')
             self.ohne_ref_btn.grid(row=1, column=1, sticky='w')
-            self.reader_btn =tk.Button(window, text="AUFNAHME!", bd='5', command=lambda: (self.disable_btn,self.nullung(daten),open_reader_from_main(daten)))
+            self.reader_btn =tk.Button(window, text="AUFNAHME!", bd='5', command=lambda: (self.disable_btn(),self.nullung(daten),open_reader_from_main(daten, self.callback)))
             self.reader_btn.grid(row=3, column=1, sticky='w', pady= 5)
 
-            self.realtimeplot_btn =tk.Button(window, text="REALTIMEPLOT!", bd='5', command=lambda:(self.disable_btn,self.nullung(daten), open_realtimeplot3_from_main(daten)))
+            self.realtimeplot_btn =tk.Button(window, text="REALTIMEPLOT!", bd='5', command=lambda:(self.disable_btn(), self.nullung(daten), open_realtimeplot3_from_main(daten, self.callback)))
             self.realtimeplot_btn.grid(row=4, column=1, sticky='w',pady=5)
             
             game_rdR =tk.Radiobutton(window, text= 'Rechts!', var = self.flag_game, value=True)
@@ -174,13 +174,13 @@ class ThrustOMeter():
             game_rdL =tk.Radiobutton(window, text = 'Links!', var = self.flag_game, value = False)
             game_rdL.grid(row=5, column=3, sticky='w')
 
-            self.game_btn =tk.Button(window, text="SPIEL!", bd='5', command=lambda:(self.disable_btn,self.nullung(daten), flappy(self.flag_game.get(), daten)))
+            self.game_btn =tk.Button(window, text="SPIEL!", bd='5', command=lambda:(self.disable_btn(),self.nullung(daten), flappy(self.flag_game.get(), daten, self.callback)))
             self.game_btn.grid(row=5, column=1, sticky='w', pady=5)
 
-            fortschritt_btn =tk.Button(window, text="FORTSCHRITT!", bd='5', command=fortschritt)
+            fortschritt_btn =tk.Button(window, text="FORTSCHRITT!", bd='5', command= fortschritt)
             fortschritt_btn.grid(row=6, column=1, sticky='w', pady=5)
 
-            self.sound_btn= tk.Button(window, text='SOUND!', bd='5', command=lambda: (self.disable_btn,self.nullung(daten),sound(daten)))
+            self.sound_btn= tk.Button(window, text='SOUND!', bd='5', command=lambda: (self.disable_btn(), self.nullung(daten),sound(daten, self.callback)))
             self.sound_btn.grid(row=7, column=1, sticky='w', pady=5)
 
             self.eichungR_lable=tk.Label(window, text='Rechts:')
@@ -192,7 +192,7 @@ class ThrustOMeter():
             self.eichungL_entry=tk.Entry(window, width=15)
             self.eichungL_entry.grid(row=11, column=0)
             
-            self.eichung_btn=tk.Button(window, text='Eichung 1kg Rechts', bd='5', command=lambda: (self.disable_btn, self.eichung()))
+            self.eichung_btn=tk.Button(window, text='Eichung 1kg Rechts', bd='5', command=lambda: self.eichung())
             self.eichung_btn.grid(row=10, column= 1, sticky='w')
 
             self.speichern_btn = tk.Button(window, text='SAVE!',bd='5', command=self.speichern)

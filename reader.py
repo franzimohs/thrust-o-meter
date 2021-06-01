@@ -8,17 +8,18 @@ from tkinter.font import Font
 import datetime
 
 class Reader(tk.Frame):
-	def __init__(self, daten, master=None):
+	def __init__(self, daten,callback,  master=None):
 		tk.Frame.__init__(self, master)
 		if hasattr(master, 'title'): master.title('Aufnahme')
 		self.grid()
 		self.daten = daten
+		self.callback = callback
 		self.font = Font(family='monospace')
 		self.flag_update = tk.IntVar(master, 0)
 		self.ref = tk.IntVar(master, 0)
 		outer_frame = tk.Frame(self)
 		f = tk.Frame(outer_frame)
-		master.iconbitmap(r'C:\Users\Franziska\Desktop\Bachelorthesis\git\thrust-o-meter\assets\bone.ico')
+		master.iconbitmap('assets/bone.ico')
 
 		tk.Label(f, font=self.font, text='file name').grid(row = 0, column = 0)
 		self.fname = tk.Entry(f, font=self.font)
@@ -90,16 +91,21 @@ class Reader(tk.Frame):
 				print('nach append')
 				self.samplecount['text'] = '%d samples' % len(self.data)
 				self.daten.lock.wait()
+	
+	def on_closing(self):
+		self.callback()
+		self.master.destroy()
 		
 
-def main(daten):
+def main(daten, callback):
 	root = tk.Tk()
-	app = Reader(daten, master=root)
+	app = Reader(daten,callback,  master=root)
+	root.protocol("WM_DELETE_WINDOW", app.on_closing)
 	app.mainloop()
 
-def open_reader_from_main(daten):
+def open_reader_from_main(daten, callback):
 	try:
-		main(daten)
+		main(daten,callback)
 	except KeyboardInterrupt:
 		pass
 

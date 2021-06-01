@@ -111,7 +111,7 @@ def main(loaddata, peakHight, plateauHight, plateauLength):
     plt.xlabel('Zeit[ms]')
     plt.ylabel('Kraft[N]')
     fig = plt.get_current_fig_manager()
-    fig.window.wm_iconbitmap(r'C:\Users\Franziska\Desktop\Bachelorthesis\git\thrust-o-meter\assets\bone.ico')
+    fig.window.wm_iconbitmap('assets/bone.ico')
     plt.gcf().canvas.set_window_title('Analyse') 
 
     

@@ -15,7 +15,7 @@ BASEY        = SCREENHEIGHT * 0.79
 IMAGES, SOUNDS, HITMASKS = {}, {}, {}
 flag =True
 daten = [10, 10.0, 10.0] 
-
+callback = 0
 
 PLAYERS_LIST = ('assets/sprites/bone_upflap.png','assets/sprites/bone_midflap.png','assets/sprites/bone_downflap.png') 
  
@@ -42,12 +42,13 @@ try:
 except NameError:
     xrange = range
 
-ICON = pygame.image.load(r'C:\Users\Franziska\Desktop\Bachelorthesis\git\thrust-o-meter\assets\bone.ico')
+ICON = pygame.image.load('assets/bone.ico')
 
-def main(Flag, Daten):
-    global SCREEN, FPSCLOCK, flag, daten
+def main(Flag, Daten, Callback):
+    global SCREEN, FPSCLOCK, flag, daten, callback
     daten = Daten
     flag = Flag
+    callback = Callback
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
     SCREEN = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
@@ -125,6 +126,7 @@ def main(Flag, Daten):
         crashInfo = mainGame(movementInfo)
         showGameOverScreen(crashInfo)
 
+ 
 
 def read_serial(flag, daten, val=-150):
 
@@ -176,6 +178,7 @@ def showWelcomeAnimation():
             
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
+                callback()
                 pygame.quit()
             if event.type == KEYDOWN and (event.key == K_SPACE or event.key == K_UP):
                 # make first flap sound and return values for mainGame
@@ -255,6 +258,7 @@ def mainGame(movementInfo):
     while True:
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
+                callback()
                 pygame.quit()
             if event.type == KEYDOWN and (event.key == K_SPACE or event.key == K_UP):
                 if playery > -2 * IMAGES['player'][0].get_height():
@@ -413,6 +417,7 @@ def showGameOverScreen(crashInfo):
 
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
+                callback()
                 pygame.quit()
             if event.type == KEYDOWN and (event.key == K_SPACE or event.key == K_UP):
                 if playery + playerHeight >= BASEY - 1:

@@ -4,7 +4,7 @@ import aupyom as ap
 import numpy
 import threading 
 import tkinter as tk
-import main as menü
+
 
 lock = threading.Condition()
 sampler = ap.Sampler()
@@ -29,11 +29,11 @@ def center(win):
 
 class Sound:
 
-    def __init__(self, window, window_title, daten):
+    def __init__(self, window, window_title, daten, callback):
         self.window = window
         self.window.title(window_title)
-        window.iconbitmap(r'C:\Users\Franziska\Desktop\Bachelorthesis\git\thrust-o-meter\assets\bone.ico')
-        
+        window.iconbitmap('assets/bone.ico')
+        self.callback = callback
         self.daten = daten
         self.rl_flag=tk.IntVar()
         self.var = 0
@@ -49,8 +49,9 @@ class Sound:
         links_rd.grid(row=2, column= 2, padx=20, pady=20)
         rechts_rd.select()
         center(self.window)
+        self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.window.mainloop() 
-
+        
              
     def sound_an(self):
         sampler.play(s1)
@@ -74,9 +75,14 @@ class Sound:
     def set_var(self, val):
         self.var = val
         return self.var
-        
+    def on_closing(self):
+        self.callback()
+        self.window.destroy()
+              
 
-def main(daten):
-    Sound(tk.Tk(), "Sound", daten)
+def main(daten, callback):
+    Sound(tk.Tk(), "Sound", daten, callback)
+    
+    
     
       

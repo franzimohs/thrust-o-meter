@@ -31,7 +31,7 @@ class portabfrage:
             self.window = window
             self.window.title(window_title)
             self.window.geometry("300x100")
-            window.iconbitmap(r'C:\Users\Franziska\Desktop\Bachelorthesis\git\thrust-o-meter\assets\bone.ico')
+            window.iconbitmap('assets/bone.ico')
             port_lable= tk.Label(window, text='Serieller Port: ')
             port_lable.grid(row=1, column= 0, sticky='w')
             erklärung_lable = tk.Label(window, text='Suche den COM-Port\nim Gerätemanager.')
