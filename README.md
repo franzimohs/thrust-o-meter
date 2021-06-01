@@ -2,7 +2,6 @@
 
 ## Nutzungsanleitung
 
-**BITTE GANZ DURCHLESEN**
 
 Schließe das Trainingsgerät via USB an den Computer an. 
 Führe die Datei Thrust-O-Meter aus. 
