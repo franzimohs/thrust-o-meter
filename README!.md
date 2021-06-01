@@ -93,8 +93,6 @@ das Massestück nun auf die linke Seite des Beckens. Drücke den Button *Eichung
 
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons Lizenzvertrag" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />Dieses Werk ist lizenziert unter einer <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Namensnennung - Nicht-kommerziell - Weitergabe unter gleichen Bedingungen 4.0 International Lizenz</a>.
 
-**Die Software steht unter einer nicht kommerziellen Creative-Commons-Lizenz und kann unter gleichen Bedingungen(außer für kommerzielle Nutzung) bei Namensnennung frei verwendet und weitergegeben werden.**
-
 **Die Nutzung zu Lehrzwecken ist ausdrücklich erlaubt!**
 
 **CC Franziska Mohs, 2021**

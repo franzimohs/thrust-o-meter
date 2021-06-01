@@ -1,3 +1,7 @@
+### CC Maik Porrmann ###
+
+
+
 import numpy as np
 from matplotlib import pyplot as plt
 from Analyse import Analyse
@@ -106,6 +110,11 @@ def main(loaddata, peakHight, plateauHight, plateauLength):
     plt.legend()
     plt.xlabel('Zeit[ms]')
     plt.ylabel('Kraft[N]')
+    fig = plt.get_current_fig_manager()
+    fig.window.wm_iconbitmap(r'C:\Users\Franziska\Desktop\Bachelorthesis\git\thrust-o-meter\assets\bone.ico')
+    plt.gcf().canvas.set_window_title('Analyse') 
+
+    
     plt.show()
 
 if __name__ == "__main__":

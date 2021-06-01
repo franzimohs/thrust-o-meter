@@ -1,3 +1,4 @@
+####CC Verena Well ####
 import numpy as np
 from matplotlib import pyplot as plt
 from Reference import createReference
@@ -277,7 +278,7 @@ def open_analyse_from_main(loadData=None, **kwargs):
 	textX2 = np.min(analyse.rawDataBackUp[:,0])
 	textY2 = analyse.plateauCorrect[2] + ((analyse.peakCorrect[2] - analyse.plateauCorrect[2]) /2)
 	ax3.text(textX2, textY2, f"Plateau: {analyse.plateauCorrect[2]} \nDelle: {analyse.dentCorrect[2]} \nSpannungsabfall: {analyse.dentDepth} \nSpitze: {analyse.peakCorrect[2]} \nSteigung: {analyse.slope}\nZeit: {analyse.time}")
-	# print(rawData)
+	
 	plt.show()
 
 if '__main__' == __name__:

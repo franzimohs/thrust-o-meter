@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+####CC Franziska Mohs####
 
 import threading
 
@@ -18,6 +18,7 @@ class Reader(tk.Frame):
 		self.ref = tk.IntVar(master, 0)
 		outer_frame = tk.Frame(self)
 		f = tk.Frame(outer_frame)
+		master.iconbitmap(r'C:\Users\Franziska\Desktop\Bachelorthesis\git\thrust-o-meter\assets\bone.ico')
 
 		tk.Label(f, font=self.font, text='file name').grid(row = 0, column = 0)
 		self.fname = tk.Entry(f, font=self.font)
@@ -102,5 +103,4 @@ def open_reader_from_main(daten):
 	except KeyboardInterrupt:
 		pass
 
-if '__main__' == __name__:
-	open_reader_from_main([10,10.0,10.0]) # FIXME kaputt
+

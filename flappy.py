@@ -42,6 +42,7 @@ try:
 except NameError:
     xrange = range
 
+ICON = pygame.image.load(r'C:\Users\Franziska\Desktop\Bachelorthesis\git\thrust-o-meter\assets\bone.ico')
 
 def main(Flag, Daten):
     global SCREEN, FPSCLOCK, flag, daten
@@ -51,7 +52,8 @@ def main(Flag, Daten):
     FPSCLOCK = pygame.time.Clock()
     SCREEN = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
     pygame.display.set_caption('Flappy Bone')
-
+    
+    pygame.display.set_icon(ICON)
     # numbers sprites for score display
     IMAGES['numbers'] = (
         pygame.image.load('assets/sprites/0.png').convert_alpha(),
@@ -72,7 +74,7 @@ def main(Flag, Daten):
     IMAGES['message'] = pygame.image.load('assets/sprites/startbildschirm.png').convert_alpha()
     # base (ground) sprite
     IMAGES['base'] = pygame.image.load('assets/sprites/base.png').convert_alpha()
-
+    
     # sounds
     if 'win' in sys.platform:
         soundExt = '.wav'

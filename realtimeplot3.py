@@ -1,3 +1,4 @@
+####CC Franziska Mohs####
 
 import sys
 import time
@@ -11,11 +12,11 @@ import pyqtgraph as pg
 class App(QtGui.QMainWindow):
     def __init__(self, daten, parent=None):
         super(App, self).__init__(parent)
-
+        self.setWindowIcon(QtGui.QIcon(r'C:\Users\Franziska\Desktop\Bachelorthesis\git\thrust-o-meter\assets\bone.ico'))
         self.daten = daten
 
         self.mainbox = QtGui.QWidget()
-        self.setWindowTitle('Realtimeplot')
+        self.setWindowTitle('Real-Time-Plot')
        
         self.setCentralWidget(self.mainbox)
         self.mainbox.setLayout(QtGui.QVBoxLayout())
@@ -97,5 +98,4 @@ def open_realtimeplot3_from_main(daten):
 
 
 
-if __name__ == '__main__':
-    open_realtimeplot3_from_main() # FIXME kaputt
+

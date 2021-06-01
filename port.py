@@ -1,3 +1,7 @@
+####CC Franziska Mohs####
+
+
+
 import tkinter as tk
 from main import main as menü
 
@@ -27,10 +31,11 @@ class portabfrage:
             self.window = window
             self.window.title(window_title)
             self.window.geometry("300x100")
+            window.iconbitmap(r'C:\Users\Franziska\Desktop\Bachelorthesis\git\thrust-o-meter\assets\bone.ico')
             port_lable= tk.Label(window, text='Serieller Port: ')
             port_lable.grid(row=1, column= 0, sticky='w')
-            erklärung_lable = tk.Label(window, text='Suche den COM-Port \nim Gerätemanager')
-            erklärung_lable.grid(row=2, column=0, sticky='w')
+            erklärung_lable = tk.Label(window, text='Suche den COM-Port\nim Gerätemanager.')
+            erklärung_lable.grid(row=2, column=1, sticky='s')
             self.port_entry = tk.Entry(window,width=10)
             
             self.port_entry.grid(row=1, column= 1, sticky='w')

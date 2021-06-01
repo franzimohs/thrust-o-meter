@@ -1,4 +1,6 @@
-#!/usr/bin/python3
+####CC Franziska Mohs####
+
+
 from Analyse import Analyse as al
 import numpy as np
 import os
@@ -36,6 +38,9 @@ def fortschritt(endung, peak):
 def plot():
   peak_list, vorspannung_list, inzisur_list, time_list = merge()
   fig = plt.figure(num='Lernfortschritt')
+  fig_manager = plt.get_current_fig_manager()
+  fig_manager.window.wm_iconbitmap(r'C:\Users\Franziska\Desktop\Bachelorthesis\git\thrust-o-meter\assets\bone.ico')
+  
   p1=fig.add_subplot(221)
   p2=fig.add_subplot(222)
   p3=fig.add_subplot(223)

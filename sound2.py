@@ -1,8 +1,10 @@
+####CC Franziska Mohs####
 
 import aupyom as ap
 import numpy
 import threading 
 import tkinter as tk
+import main as menü
 
 lock = threading.Condition()
 sampler = ap.Sampler()
@@ -30,6 +32,7 @@ class Sound:
     def __init__(self, window, window_title, daten):
         self.window = window
         self.window.title(window_title)
+        window.iconbitmap(r'C:\Users\Franziska\Desktop\Bachelorthesis\git\thrust-o-meter\assets\bone.ico')
         
         self.daten = daten
         self.rl_flag=tk.IntVar()
