@@ -18,12 +18,12 @@ Es stehen nun verschieden Funktionen zur Verfügung:
 6. Anzeige des Lernfortschrittes (FORTSCHRITT!)
 7. Eichung des Gerätes (Eichung 1kg Rechts und SAVE!)
 
-### **ACHTUNG**: Bitte immer nur ein Programm zur Zeit laufen lassen!!!
+
 
 # 1. Aufnahme eines Impulses (AUFNAHME!)
 
 Links wird der Name der Datei angezeigt. Alle Dateien werden mit einem Zeitstempel benannt (JJJJMMDD_HHMMSS). 
-Soll der Name geändert werden, bitte **unbeding** unten *ohne Referenz* auswählen, da ansonsten das Programm Lernfortschritt
+Soll der Name geändert werden, bitte **unbedingt** unten *ohne Referenz* auswählen, da ansonsten das Programm Lernfortschritt
 beschädigt werden kann!
 
 Wähle die Seite, auf der der Impuls ausgeführt werden soll aus. Wähle die Referenz aus, mit der dein Impuls später verglichen

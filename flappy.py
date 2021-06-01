@@ -1,6 +1,9 @@
+### nach dem Programm FlaPyBird (MIT-License) von Sourabh Verma ###
+###cc Franziska Mohs###
+
+
 from itertools import cycle
 import random
-from re import S
 import sys
 import pygame
 from pygame.locals import *
@@ -480,7 +483,7 @@ def get_random_bone():
 def getRandomPipe():
     """returns a randomly generated pipe"""
     # y of gap between upper and lower pipe
-    gapY = random.randrange(100, 280) #bleibt unten 250 war ursprünglich int(BASEY * 0.6 - PIPEGAPSIZE)
+    gapY = random.randrange(100, 280) 
     gapY += int(BASEY * 0.2)
     pipeHeight = IMAGES['pipe'][0].get_height()
     pipeX = SCREENWIDTH + 10
@@ -491,7 +494,7 @@ def getRandomPipe():
     ]
 
 def getDownPipe():
-    gapY = random.randrange(279, 280) #bleibt unten 250 war ursprünglich int(BASEY * 0.6 - PIPEGAPSIZE)
+    gapY = random.randrange(279, 280)
     gapY += int(BASEY * 0.2)
     pipeHeight = IMAGES['pipe'][0].get_height()
     pipeX = SCREENWIDTH + 10
