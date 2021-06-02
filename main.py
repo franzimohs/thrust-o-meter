@@ -4,12 +4,12 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter.constants import FLAT
 from reader import open_reader_from_main
-from realtimeplot3 import open_realtimeplot3_from_main
+from realtimeplot import open_realtimeplot3_from_main
 from flappy import main as flappy
 from threading import Thread, Condition
 import serial
 from FileComparison import main as filecomp
-from sound2 import main as sound
+from sound import main as sound
 from Lernfortschritt import main as fortschritt
 
 eichwert_r = -62
@@ -65,12 +65,12 @@ class ThrustOMeter():
                 self.eichungR_entry.delete(0, 'end')
                 self.eichungR_entry.insert(0,str(r))
                 self.eichungwechsel = False
-                self.eichung_btn.config(text='Eichung 1kg Links')
+                self.eichung_btn.config(text='Eichung 1kg links')
             else:
                 self.eichungL_entry.delete(0, 'end')
                 self.eichungL_entry.insert(0,str(l))
                 self.eichungwechsel = True
-                self.eichung_btn.config(text='Eichung 1kg Rechts')
+                self.eichung_btn.config(text='Eichung 1kg rechts')
             
         
         def disable_btn(self):
@@ -192,7 +192,7 @@ class ThrustOMeter():
             self.eichungL_entry=tk.Entry(window, width=15)
             self.eichungL_entry.grid(row=11, column=0)
             
-            self.eichung_btn=tk.Button(window, text='Eichung 1kg Rechts', bd='5', command=lambda: self.eichung())
+            self.eichung_btn=tk.Button(window, text='Eichung 1kg rechts', bd='5', command=lambda: self.eichung())
             self.eichung_btn.grid(row=10, column= 1, sticky='w')
 
             self.speichern_btn = tk.Button(window, text='SAVE!',bd='5', command=self.speichern)

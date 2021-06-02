@@ -1,7 +1,6 @@
 ####CC Franziska Mohs####
 
 import threading
-
 import numpy as np
 import tkinter as tk
 from tkinter.font import Font
@@ -72,23 +71,19 @@ class Reader(tk.Frame):
 		self.btn_stop.config(state='disabled')
 		np.savetxt('ausgabe/'+self.fname.get()+'.tom'+str(self.ref.get()), self.data, fmt='%d')
 		self.data.clear()
-		self.samplecount['text'] = 'saved'
+		self.samplecount['text'] = 'gespeichert'
 		self.name_update()
 		
 
 	def reader(self):
-		print('bin in reader')
 		with self.daten.lock:
 			while self.recording:
 				if self.flag_update.get()==0:
-					print('whileifr')
 					val = self.daten.r
 				else:
 					val = self.daten.l
 
-				print('vor append')
 				self.data.append((self.daten.t, (val*9.81)))#g= 9,81 F= m*g
-				print('nach append')
 				self.samplecount['text'] = '%d samples' % len(self.data)
 				self.daten.lock.wait()
 	
