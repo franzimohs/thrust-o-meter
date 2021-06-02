@@ -15,7 +15,7 @@ Es stehen nun verschieden Funktionen zur Verfügung:
 4. Auditive Echtzeitausgabe (SOUND!) 
 5. Spiel "Flappy Bone" (SPIEL!)
 6. Anzeige des Lernfortschrittes (FORTSCHRITT!)
-7. Eichung des Gerätes (Eichung 1kg Rechts und SAVE!)
+7. Eichung des Gerätes (Eichung 1kg rechts und SAVE!)
 
 
 
@@ -97,7 +97,7 @@ das Massestück nun auf die linke Seite des Beckens. Drücke den Button *Eichung
 **CC Franziska Mohs, 2021**
 
 
-## Abhängigkeiten(Python)
+## Abhängigkeiten
 
 Thrust-O-Meter basiert auf folgenden Bibliotheken:
 
@@ -108,3 +108,4 @@ Thrust-O-Meter basiert auf folgenden Bibliotheken:
 * [matplotlib](https://github.com/matplotlib/matplotlib)
 * [pyqtgraph](https://github.com/pyqtgraph/pyqtgraph)
 * [pyserial](https://github.com/pyserial/pyserial)
+
