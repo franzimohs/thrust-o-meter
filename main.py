@@ -14,6 +14,7 @@ from Lernfortschritt import main as fortschritt
 
 eichwert_r = -62
 eichwert_l = -62
+eichwert_basis = 5
 nullwert_r = 0.00
 nullwert_l = 0.00
 r = 0.00
@@ -65,12 +66,12 @@ class ThrustOMeter():
                 self.eichungR_entry.delete(0, 'end')
                 self.eichungR_entry.insert(0,str(r))
                 self.eichungwechsel = False
-                self.eichung_btn.config(text='Eichung 1kg links')
+                self.eichung_btn.config(text='Eichung %skg links'%eichwert_basis)
             else:
                 self.eichungL_entry.delete(0, 'end')
                 self.eichungL_entry.insert(0,str(l))
                 self.eichungwechsel = True
-                self.eichung_btn.config(text='Eichung 1kg rechts')
+                self.eichung_btn.config(text='Eichung %skg links'%eichwert_basis)
             
         
         def disable_btn(self):
@@ -160,7 +161,7 @@ class ThrustOMeter():
 
             self.analyse_btn =tk.Button(window, text="ANALYSE!", bd='5', command=lambda: filecomp(self.filename,self.peak, (self.peak/4), float(plateauL_entry.get())), state='disabled')
             self.analyse_btn.grid(row=0, column=1, sticky='w' , pady=10)
-            self.ohne_ref_btn = tk.Button(window, text='FREIE ANALYSE!', bd='5', command=lambda: filecomp(self.filename, peak_entry.get(), plateauH_entry.get()), state='disabled')
+            self.ohne_ref_btn = tk.Button(window, text='FREIE ANALYSE!', bd='5', command=lambda: filecomp(self.filename, float(peak_entry.get()), float(plateauH_entry.get()), float(plateauL_entry.get())), state='disabled')
             self.ohne_ref_btn.grid(row=1, column=1, sticky='w')
             self.reader_btn =tk.Button(window, text="AUFNAHME!", bd='5', command=lambda: (self.disable_btn(),self.nullung(daten),open_reader_from_main(daten, self.callback)))
             self.reader_btn.grid(row=3, column=1, sticky='w', pady= 5)
@@ -192,7 +193,7 @@ class ThrustOMeter():
             self.eichungL_entry=tk.Entry(window, width=15)
             self.eichungL_entry.grid(row=11, column=0)
             
-            self.eichung_btn=tk.Button(window, text='Eichung 1kg rechts', bd='5', command=lambda: self.eichung())
+            self.eichung_btn=tk.Button(window, text='Eichung %skg rechts'%eichwert_basis, bd='5', command=lambda: self.eichung())
             self.eichung_btn.grid(row=10, column= 1, sticky='w')
 
             self.speichern_btn = tk.Button(window, text='SAVE!',bd='5', command=self.speichern)
@@ -217,13 +218,22 @@ def main(Port):
 
                 parts = decoded.split()
                 
-                if (3 != len(parts)):
-                        continue
-                t, r, l = parts
+                if (3 == len(parts)):
+                    t, r, l = parts
 
-                daten.t = int(t)
-                daten.r = (float(r) - nullwert_r) / (eichwert_r - nullwert_r)
-                daten.l = (float(l) - nullwert_l) / (eichwert_l - nullwert_l)
+                    daten.t = int(t)
+                    daten.r = (float(r) - nullwert_r) / (eichwert_r/eichwert_basis - nullwert_r)
+                    daten.l = (float(l) - nullwert_l) / (eichwert_l/eichwert_basis - nullwert_l)                
+                elif (2 == len(parts)):
+                    t, r = parts
+
+                    daten.t = int(t)
+                    daten.r = (float(r) - nullwert_r) / (eichwert_r/eichwert_basis - nullwert_r)
+                    daten.l = 0
+                   
+                else:
+                        continue
+               
                 with daten.lock:
                         daten.lock.notify_all()
             except Exception as e:
@@ -232,4 +242,4 @@ def main(Port):
     ThrustOMeter(tk.Tk(), "Thrust-O-Meter")
 
 if __name__ == '__main__':
-    main('COM6')
+    main('COM5')

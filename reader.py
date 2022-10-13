@@ -5,6 +5,9 @@ import numpy as np
 import tkinter as tk
 from tkinter.font import Font
 import datetime
+from tkinter import filedialog
+import os.path
+
 
 class Reader(tk.Frame):
 	def __init__(self, daten,callback,  master=None):
@@ -28,6 +31,7 @@ class Reader(tk.Frame):
 		tk.Label(f, font=self.font, text='Maximalkraft:').grid(row = 1, column=2)
 		tk.Radiobutton(f, text='Rechts!', var=self.flag_update, value=0).grid(row = 0, column = 4)
 		tk.Radiobutton(f, text='Links!', var=self.flag_update, value=1).grid(row = 0, column = 5)
+		tk.Radiobutton(f, text='Beide!', var=self.flag_update, value=2).grid(row = 0, column = 6)
 		tk.Radiobutton(f, text='360N', var=self.ref, value=0).grid(row=1, column=3)
 		tk.Radiobutton(f, text='340N', var=self.ref, value=1).grid(row=1, column=4)
 		tk.Radiobutton(f, text='300N', var=self.ref, value=2).grid(row=1, column=5)
@@ -69,7 +73,9 @@ class Reader(tk.Frame):
 		self.recording = False
 		self.btn_start.config(state='normal')
 		self.btn_stop.config(state='disabled')
-		np.savetxt('ausgabe/'+self.fname.get()+'.tom'+str(self.ref.get()), self.data, fmt='%d')
+		dirname = filedialog.askdirectory()
+		filename=os.path.join(dirname, self.fname.get()+'.tom'+str(self.ref.get()))
+		np.savetxt(filename, self.data, fmt='%d')
 		self.data.clear()
 		self.samplecount['text'] = 'gespeichert'
 		self.name_update()
@@ -79,11 +85,14 @@ class Reader(tk.Frame):
 		with self.daten.lock:
 			while self.recording:
 				if self.flag_update.get()==0:
-					val = self.daten.r
+					self.data.append((self.daten.t, (self.daten.r * 9.81)))#g= 9,81 F= m*g
+				elif self.flag_update.get()==1:
+					self.data.append((self.daten.t, (self.daten.l * 9.81)))#g= 9,81 F= m*g
 				else:
-					val = self.daten.l
+					self.data.append((self.daten.t, (self.daten.r * 9.81), (self.daten.l * 9.81)))#g= 9,81 F= m*g
+					
+					
 
-				self.data.append((self.daten.t, (val*9.81)))#g= 9,81 F= m*g
 				self.samplecount['text'] = '%d samples' % len(self.data)
 				self.daten.lock.wait()
 	
