@@ -136,9 +136,9 @@ def read_serial(flag, daten, val=-150):
 
     faktor_maximalkraft = (SCREENHEIGHT-140)/200
     if flag:
-        valy = daten.r*9.81
-    else:
         valy = daten.l*9.81
+    else:
+        valy = daten.r*9.81
 
     val =-(valy *faktor_maximalkraft)
     

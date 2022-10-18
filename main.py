@@ -51,7 +51,7 @@ def center(win):
 class ThrustOMeter():
         def browsefunc(self):
             self.filename = filedialog.askopenfilename()
-            pfad_ordner, pfad_datei =self.filename.split('ausgabe/')
+            pfad_ordner, pfad_datei =self.filename.split(self.ausgabe_ordner)
             datei, self.endung=pfad_datei.split('.')
             self.pathlabel.config(text=datei)
             self.analyse_btn.config(state='normal')
@@ -122,12 +122,18 @@ class ThrustOMeter():
             if self.endung== 'tom3':
                 peak=270
             return peak
+        
+        def ordner_wechsel(self):
+            self.ausgabe_ordner = filedialog.askdirectory()
+            return self.ausgabe_ordner
+
 
 
         def __init__(self, window, window_title):
             self.window = window
             self.window.title(window_title)
             self.window.geometry("500x450")
+            self.ausgabe_ordner='E:\\ausgabe'
         
             try:
                 self.entspeichern()
@@ -169,16 +175,16 @@ class ThrustOMeter():
             self.realtimeplot_btn =tk.Button(window, text="REALTIMEPLOT!", bd='5', command=lambda:(self.disable_btn(), self.nullung(daten), open_realtimeplot3_from_main(daten, self.callback)))
             self.realtimeplot_btn.grid(row=4, column=1, sticky='w',pady=5)
             
-            game_rdR =tk.Radiobutton(window, text= 'Rechts!', var = self.flag_game, value=True)
+            game_rdR =tk.Radiobutton(window, text= 'Rechts!', var = self.flag_game, value=False)
             game_rdR.grid(row=5, column =2, sticky='w')
 
-            game_rdL =tk.Radiobutton(window, text = 'Links!', var = self.flag_game, value = False)
+            game_rdL =tk.Radiobutton(window, text = 'Links!', var = self.flag_game, value = True)
             game_rdL.grid(row=5, column=3, sticky='w')
 
             self.game_btn =tk.Button(window, text="SPIEL!", bd='5', command=lambda:(self.disable_btn(),self.nullung(daten), flappy(self.flag_game.get(), daten, self.callback)))
             self.game_btn.grid(row=5, column=1, sticky='w', pady=5)
 
-            fortschritt_btn =tk.Button(window, text="FORTSCHRITT!", bd='5', command= fortschritt)
+            fortschritt_btn =tk.Button(window, text="FORTSCHRITT!", bd='5', command=lambda: fortschritt(self.ausgabe_ordner))
             fortschritt_btn.grid(row=6, column=1, sticky='w', pady=5)
 
             self.sound_btn= tk.Button(window, text='SOUND!', bd='5', command=lambda: (self.disable_btn(), self.nullung(daten),sound(daten, self.callback)))
@@ -193,12 +199,15 @@ class ThrustOMeter():
             self.eichungL_entry=tk.Entry(window, width=15)
             self.eichungL_entry.grid(row=11, column=0)
             
+            
             self.eichung_btn=tk.Button(window, text='Eichung %skg rechts'%eichwert_basis, bd='5', command=lambda: self.eichung())
             self.eichung_btn.grid(row=10, column= 1, sticky='w')
 
             self.speichern_btn = tk.Button(window, text='SAVE!',bd='5', command=self.speichern)
             self.speichern_btn.grid(row=10, column=2, sticky='w', padx=10)
             
+            self.ordner_btn=tk.Button(window, text='Ordner wechseln', bd='5',command= lambda: self.ordner_wechsel())
+            self.ordner_btn.grid(row=12, column=0)
 
             center(self.window)
             self.window.mainloop()    
