@@ -6,24 +6,28 @@ import numpy as np
 import os
 from matplotlib import pyplot as plt
 
+def entspeichern():
+  with open('Ausgabepfad', 'r') as speicher:
+    dirname = str(speicher.readline())
+  return dirname
+    
 
-dirname='ausgabe'
 
 def fortschritt(endung, peak):
   peak_list = []
   vorspannung_list =[]
   inzisur_list =[]
   time_list =[]
+  dirname = entspeichern()
   
-  
-  for (x, y, filenames) in os.walk(dirname): #os.walk('ausgabe'):
-    
+  for (x, y, filenames) in os.walk(dirname): 
+
     for file in sorted(filenames):
       name = file.split('.')
       if name[-1] != endung:
         continue 
         
-      rawData = np.loadtxt(dirname+file)
+      rawData = np.loadtxt(os.path.join(dirname,file))
       
       try:
         analyseData=al(rawData)
@@ -106,9 +110,7 @@ def merge():
   time_fehler_list = sorted(time_list0 + time_list1 + time_list2 + time_list3)
   return peak_fehler_list, vorspannung_fehler_list, inzisur_fehler_list, time_fehler_list
 
-def main(ausgabe_ordner):
-  global dirname
-  dirname = ausgabe_ordner
+def main():
   plot()
   plt.show()
 

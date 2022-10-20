@@ -88,10 +88,13 @@ class App(QtGui.QMainWindow):
         
         self.counter += 1
         
-
+app = None
 
 def main(daten, callback):
-    app = QtGui.QApplication(sys.argv)
+    global app
+    if app is None:
+        app = QtGui.QApplication(sys.argv)
+
     thisapp = App(daten, callback)
     thisapp.show()
     app.exec_()

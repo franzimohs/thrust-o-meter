@@ -10,12 +10,13 @@ import os.path
 
 
 class Reader(tk.Frame):
-	def __init__(self, daten,callback,  master=None):
+	def __init__(self, daten, callback, pfad, master=None):
 		tk.Frame.__init__(self, master)
 		if hasattr(master, 'title'): master.title('Aufnahme')
 		self.grid()
 		self.daten = daten
 		self.callback = callback
+		self.pfad = pfad
 		self.font = Font(family='monospace')
 		self.flag_update = tk.IntVar(master, 0)
 		self.ref = tk.IntVar(master, 0)
@@ -73,8 +74,7 @@ class Reader(tk.Frame):
 		self.recording = False
 		self.btn_start.config(state='normal')
 		self.btn_stop.config(state='disabled')
-		dirname = filedialog.askdirectory()
-		filename=os.path.join(dirname, self.fname.get()+'.tom'+str(self.ref.get()))
+		filename = os.path.join(self.pfad, self.fname.get()+'.tom'+str(self.ref.get()))
 		np.savetxt(filename, self.data, fmt='%d')
 		self.data.clear()
 		self.samplecount['text'] = 'gespeichert'
@@ -101,15 +101,15 @@ class Reader(tk.Frame):
 		self.master.destroy()
 		
 
-def main(daten, callback):
+def main(daten, callback, pfad):
 	root = tk.Tk()
-	app = Reader(daten,callback,  master=root)
+	app = Reader(daten, callback, pfad, master=root)
 	root.protocol("WM_DELETE_WINDOW", app.on_closing)
 	app.mainloop()
 
-def open_reader_from_main(daten, callback):
+def open_reader_from_main(daten, callback, pfad):
 	try:
-		main(daten,callback)
+		main(daten, callback, pfad)
 	except KeyboardInterrupt:
 		pass
 

@@ -50,18 +50,15 @@ def center(win):
 
 class ThrustOMeter():
         def browsefunc(self):
-            self.filename = filedialog.askopenfilename()
-            pfad_ordner, pfad_datei =self.filename.split(self.ausgabe_ordner)
+            self.filename = filedialog.askopenfilename(initialdir=self.pfad, title='Zu analysierende Datei wählen')
+            pfad_ordner, pfad_datei =self.filename.split('ausgabe')
             datei, self.endung=pfad_datei.split('.')
             self.pathlabel.config(text=datei)
             self.analyse_btn.config(state='normal')
             self.ohne_ref_btn.config(state='normal')
             self.peak= self.welcher_peak()
-            
 
         def eichung(self):
-           
-            
             if self.eichungwechsel:
                 self.eichungR_entry.delete(0, 'end')
                 self.eichungR_entry.insert(0,str(r))
@@ -73,7 +70,6 @@ class ThrustOMeter():
                 self.eichungwechsel = True
                 self.eichung_btn.config(text='Eichung %skg links'%eichwert_basis)
             
-        
         def disable_btn(self):
             self.game_btn.config(state='disabled')
             self.sound_btn.config(state='disabled')
@@ -87,8 +83,6 @@ class ThrustOMeter():
             self.reader_btn.config(state='normal')
             self.eichung_btn.config(state='normal')
             self.realtimeplot_btn.config(state='normal')
-
-
 
         def nullung(self, daten):
             global nullwert_r, nullwert_l
@@ -123,23 +117,33 @@ class ThrustOMeter():
                 peak=270
             return peak
         
-        def ordner_wechsel(self):
-            self.ausgabe_ordner = filedialog.askdirectory()
-            return self.ausgabe_ordner
+        def Pfadspeichern(self):
+            self.pfad = filedialog.askdirectory(title='Ausgabeordner wählen')
+            with open('Ausgabepfad', 'w') as speicher:
+                speicher.write(f'{self.pfad}')
+                speicher.close()
 
-
-
+        def Pfadentspeichern(self):
+            with open('Ausgabepfad', 'r') as speicher:
+                self.pfad = speicher.readline()
+    
         def __init__(self, window, window_title):
             self.window = window
             self.window.title(window_title)
             self.window.geometry("500x450")
-            self.ausgabe_ordner='E:\\ausgabe'
-        
+
+            try:
+                self.Pfadentspeichern()
+            except Exception as e:
+                print('Kann nicht Pfad entspeichern:'+ str(e))
+                self.Pfadspeichern()
+
+            
             try:
                 self.entspeichern()
             except Exception as e:
-                print('Kann nicht entspeichern:'+ str(e))
-                pass
+                print('Kann nicht Eichwerte entspeichern:'+ str(e))
+
             self.callback = self.enable_btn
             window.iconbitmap('assets/bone.ico')
             self.pathlabel = tk.Label(window)
@@ -167,9 +171,11 @@ class ThrustOMeter():
 
             self.analyse_btn =tk.Button(window, text="ANALYSE!", bd='5', command=lambda: filecomp(self.filename,self.peak, (self.peak/4), float(plateauL_entry.get())), state='disabled')
             self.analyse_btn.grid(row=0, column=1, sticky='w' , pady=10)
+
             self.ohne_ref_btn = tk.Button(window, text='FREIE ANALYSE!', bd='5', command=lambda: filecomp(self.filename, float(peak_entry.get()), float(plateauH_entry.get()), float(plateauL_entry.get())), state='disabled')
             self.ohne_ref_btn.grid(row=1, column=1, sticky='w')
-            self.reader_btn =tk.Button(window, text="AUFNAHME!", bd='5', command=lambda: (self.disable_btn(),self.nullung(daten),open_reader_from_main(daten, self.callback)))
+
+            self.reader_btn =tk.Button(window, text="AUFNAHME!", bd='5', command=lambda: (self.disable_btn(),self.nullung(daten),open_reader_from_main(daten, self.callback, self.pfad)))
             self.reader_btn.grid(row=3, column=1, sticky='w', pady= 5)
 
             self.realtimeplot_btn =tk.Button(window, text="REALTIMEPLOT!", bd='5', command=lambda:(self.disable_btn(), self.nullung(daten), open_realtimeplot3_from_main(daten, self.callback)))
@@ -184,7 +190,7 @@ class ThrustOMeter():
             self.game_btn =tk.Button(window, text="SPIEL!", bd='5', command=lambda:(self.disable_btn(),self.nullung(daten), flappy(self.flag_game.get(), daten, self.callback)))
             self.game_btn.grid(row=5, column=1, sticky='w', pady=5)
 
-            fortschritt_btn =tk.Button(window, text="FORTSCHRITT!", bd='5', command=lambda: fortschritt(self.ausgabe_ordner))
+            fortschritt_btn =tk.Button(window, text="FORTSCHRITT!", bd='5', command=fortschritt)
             fortschritt_btn.grid(row=6, column=1, sticky='w', pady=5)
 
             self.sound_btn= tk.Button(window, text='SOUND!', bd='5', command=lambda: (self.disable_btn(), self.nullung(daten),sound(daten, self.callback)))
@@ -206,7 +212,7 @@ class ThrustOMeter():
             self.speichern_btn = tk.Button(window, text='SAVE!',bd='5', command=self.speichern)
             self.speichern_btn.grid(row=10, column=2, sticky='w', padx=10)
             
-            self.ordner_btn=tk.Button(window, text='Ordner wechseln', bd='5',command= lambda: self.ordner_wechsel())
+            self.ordner_btn=tk.Button(window, text='Ordner wechseln', bd='5',command= self.Pfadspeichern)
             self.ordner_btn.grid(row=12, column=0)
 
             center(self.window)

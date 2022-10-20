@@ -11,8 +11,8 @@ from tkinter import filedialog
 
 def center(win):
     """
-    centers a tkinter window
-    :param win: the main window or Toplevel window to center
+    centers a tkinter self.master
+    :param win: the main self.master or Toplevel self.master to center
     """
     win.update_idletasks()
     width = win.winfo_width()
@@ -28,33 +28,64 @@ def center(win):
 
 class portabfrage:
 
-    def __init__(self, window, window_title):
-            self.window = window
-            self.window.title(window_title)
-            self.window.geometry("300x100")
-            window.iconbitmap('assets/bone.ico')
-            port_lable= tk.Label(window, text='Serieller Port: ')
+    def __init__(self, master, window_title):
+            self.master = tk.Tk() if master is None else master
+            self.master.title(window_title)
+            self.master.geometry("300x100")
+            self.master.iconbitmap('assets/bone.ico')
+            port_lable= tk.Label(self.master, text='Serieller Port: ')
             port_lable.grid(row=1, column= 0, sticky='w')
-            erklärung_lable = tk.Label(window, text='Suche den COM-Port\nim Gerätemanager.')
+            erklärung_lable = tk.Label(self.master, text='Suche den COM-Port\nim Gerätemanager.')
             erklärung_lable.grid(row=2, column=1, sticky='s')
-            self.port_entry = tk.Entry(window,width=10)
+            self.port_entry = tk.Entry(self.master,width=10)
             
             self.port_entry.grid(row=1, column= 1, sticky='w')
             self.port_entry.insert(0,'COM6')
-            port_btn = tk.Button(window, text='Port speichern', bd=5, command=self.PortButton)
+            port_btn = tk.Button(self.master, text='Port speichern', bd=5, command=self.PortButton)
             port_btn.grid(row=1, column=2, sticky='w')
             self.Port='COM6'
-            center(self.window)
-            self.window.mainloop() 
-             
+            center(self.master)
+            self.master.mainloop() 
+
+
     def PortButton(self):
         self.Port= self.port_entry.get()
-        self.window.destroy()
+        self.master.destroy()
         
         menü(self.Port)
 
+class portwissenschaft():
+    def __init__(self, master, Überschrift):
+        import sys, serial
+
+        success = False
+        
+        if sys.platform.startswith("win"):
+            for i in range(1, 10):
+                port = f"COM{i}"
+                try:
+                    serial.Serial(port)
+                    success = True
+                    break
+                except:
+                    pass
+        elif sys.platform.startswith("linux"):
+            import glob
+            for port in glob.glob("/dev/ttyUSB*") + glob.glob("/dev/ttyACM*"):
+                try:
+                    serial.Serial(port)
+                    success = True
+                    break
+                except:
+                    pass
+
+        if not success:
+            portabfrage(master, Überschrift)
+
+        menü(port)
+
 def main():
-    portabfrage(tk.Tk(), "Portabfrage")
+    portwissenschaft(master=None, Überschrift="Portabfrage")
 
 if __name__ == '__main__':
     main()
