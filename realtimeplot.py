@@ -2,25 +2,25 @@
 
 import sys
 import time
-from pyqtgraph.Qt import QtCore, QtGui
+from pyqtgraph.Qt import QtCore, QtWidgets, QtWidgets
 import pyqtgraph
 import numpy as np
 import pyqtgraph as pg
 
 
 
-class App(QtGui.QMainWindow):
+class App(QtWidgets.QMainWindow):
     def __init__(self, daten, callback, parent=None):
         super(App, self).__init__(parent)
-        self.setWindowIcon(QtGui.QIcon('assets/bone.ico'))
+       # self.setWindowIcon(QtWidgets.QIcon('assets/bone.ico'))
         self.daten = daten
         self.callback = callback 
 
-        self.mainbox = QtGui.QWidget()
+        self.mainbox = QtWidgets.QWidget()
         self.setWindowTitle('Real-Time-Plot')
        
         self.setCentralWidget(self.mainbox)
-        self.mainbox.setLayout(QtGui.QVBoxLayout())
+        self.mainbox.setLayout(QtWidgets.QVBoxLayout())
         
         self.canvas = pg.GraphicsLayoutWidget()
         self.mainbox.layout().addWidget(self.canvas)
@@ -28,12 +28,12 @@ class App(QtGui.QMainWindow):
        
         self.target = pyqtgraph.InfiniteLine(angle = 0, pos = 300, movable = True, bounds=[100,400])
        
-        self.zielhöhe = QtGui.QLabel()
-        self.label = QtGui.QLabel()
+        self.zielhöhe = QtWidgets.QLabel()
+        self.label = QtWidgets.QLabel()
         self.mainbox.layout().addWidget(self.label)
         self.mainbox.layout().addWidget(self.zielhöhe)
-        self.radioL = QtGui.QRadioButton()
-        self.radioR = QtGui.QRadioButton()
+        self.radioL = QtWidgets.QRadioButton()
+        self.radioR = QtWidgets.QRadioButton()
         self.mainbox.layout().addWidget(self.radioL)
         self.mainbox.layout().addWidget(self.radioR)
         self.radioL.setText('Links!')
@@ -57,7 +57,7 @@ class App(QtGui.QMainWindow):
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self._update)
-        self.timer.start(1000/30)  
+        self.timer.start(int(1000/30))  
     
     def closeEvent(self, event):
         self.callback()
@@ -93,7 +93,7 @@ app = None
 def main(daten, callback):
     global app
     if app is None:
-        app = QtGui.QApplication(sys.argv)
+        app = QtWidgets.QApplication(sys.argv)
 
     thisapp = App(daten, callback)
     thisapp.show()

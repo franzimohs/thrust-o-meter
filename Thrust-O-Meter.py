@@ -4,7 +4,6 @@
 
 import tkinter as tk
 from main import main as menü
-from tkinter import filedialog
 
 
 

@@ -52,7 +52,7 @@ def main(daten, callback):
     if app is None:
         app = QtGui.QApplication(sys.argv)
         print('app', app)
-        
+
     thisapp = App(daten, callback)
     thisapp.show()
     
