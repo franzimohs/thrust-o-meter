@@ -5,7 +5,6 @@ import numpy as np
 import tkinter as tk
 from tkinter.font import Font
 import datetime
-from tkinter import filedialog
 import os.path
 
 

@@ -114,6 +114,7 @@ class ThrustOMeter():
                 vorspannung = 63
             return peak, vorspannung
         
+        
         def Pfadspeichern(self):
             self.pfad = filedialog.askdirectory(title='Ausgabeordner wählen')
             with open('Ausgabepfad', 'w') as speicher:
@@ -164,7 +165,7 @@ class ThrustOMeter():
 
             plateauL_entry =tk.Entry(window, width=6)
             plateauL_entry.grid(row=2, column=3, sticky='w')
-            plateauL_entry.insert(0,'1000')
+            plateauL_entry.insert(0,'4000')
 
             self.analyse_btn =tk.Button(window, text="ANALYSE!", bd='5', command=lambda: filecomp(self.filename,self.peak, self.vorspannung, float(plateauL_entry.get())), state='disabled')
             self.analyse_btn.grid(row=0, column=1, sticky='w' , pady=10)
@@ -253,4 +254,4 @@ def main(Port):
     ThrustOMeter(tk.Tk(), "Thrust-O-Meter")
 
 if __name__ == '__main__':
-    main('COM5')
+    main('COM4')
