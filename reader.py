@@ -5,7 +5,6 @@ import numpy as np
 import tkinter as tk
 from tkinter.font import Font
 import datetime
-from tkinter import filedialog
 import os.path
 
 
@@ -108,7 +107,7 @@ class Reader(tk.Frame):
 def main(daten, callback, pfad):
 	root = tk.Tk()
 	app = Reader(daten, callback, pfad, master=root)
-	root.protocol("WM_DELETE_WINDOW", app.on_closing)g
+	root.protocol("WM_DELETE_WINDOW", app.on_closing)
 	app.mainloop()
 
 def open_reader_from_main(daten, callback, pfad):
