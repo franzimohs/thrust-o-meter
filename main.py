@@ -40,7 +40,7 @@ class ThrustOMeter():
             self.pathlabel.config(text=datei)
             self.analyse_btn.config(state='normal')
             self.ohne_ref_btn.config(state='normal')
-            self.peak= self.welcher_peak()
+            self.peak, self.vorspannung= self.welcher_peak()
 
         def eichung(self):
             if self.eichungwechsel:
@@ -91,15 +91,28 @@ class ThrustOMeter():
                 eichwert_l = float(speicher.readline().strip())
         
         def welcher_peak(self):
-            if self.endung == 'tom0':
-                peak =360
-            if self.endung == 'tom1':
-                peak=330
-            if self.endung == 'tom2':
-                peak=300
-            if self.endung== 'tom3':
-                peak=270
-            return peak
+            if self.endung == 'tom00':
+                peak =550
+                vorspannung = 220
+            if self.endung == 'tom10':
+                peak=450
+            if self.endung == 'tom20':
+                peak=350
+            if self.endung== 'tom30':
+                peak=250
+            if self.endung == 'tom01':
+                peak = 550
+                vorspannung = 138
+            if self.endung == 'tom11':
+                peak = 450
+                vorspannung = 113
+            if self.endung == 'tom21':
+                peak = 350
+                vorspannung = 88
+            if self.endung == 'tom31':
+                peak = 250
+                vorspannung = 63
+            return peak, vorspannung
         
         def Pfadspeichern(self):
             self.pfad = filedialog.askdirectory(title='Ausgabeordner wählen')
@@ -153,7 +166,7 @@ class ThrustOMeter():
             plateauL_entry.grid(row=2, column=3, sticky='w')
             plateauL_entry.insert(0,'1000')
 
-            self.analyse_btn =tk.Button(window, text="ANALYSE!", bd='5', command=lambda: filecomp(self.filename,self.peak, (self.peak/4), float(plateauL_entry.get())), state='disabled')
+            self.analyse_btn =tk.Button(window, text="ANALYSE!", bd='5', command=lambda: filecomp(self.filename,self.peak, self.vorspannung, float(plateauL_entry.get())), state='disabled')
             self.analyse_btn.grid(row=0, column=1, sticky='w' , pady=10)
 
             self.ohne_ref_btn = tk.Button(window, text='FREIE ANALYSE!', bd='5', command=lambda: filecomp(self.filename, float(peak_entry.get()), float(plateauH_entry.get()), float(plateauL_entry.get())), state='disabled')

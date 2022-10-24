@@ -20,6 +20,7 @@ class Reader(tk.Frame):
 		self.font = Font(family='monospace')
 		self.flag_update = tk.IntVar(master, 0)
 		self.ref = tk.IntVar(master, 0)
+		self.verhältnis = tk.IntVar(master, 0)
 		outer_frame = tk.Frame(self)
 		f = tk.Frame(outer_frame)
 		master.iconbitmap('assets/bone.ico')
@@ -33,12 +34,15 @@ class Reader(tk.Frame):
 		tk.Radiobutton(f, text='Rechts!', var=self.flag_update, value=0).grid(row = 0, column = 4)
 		tk.Radiobutton(f, text='Links!', var=self.flag_update, value=1).grid(row = 0, column = 5)
 		tk.Radiobutton(f, text='Beide!', var=self.flag_update, value=2).grid(row = 0, column = 6)
-		tk.Radiobutton(f, text='360N', var=self.ref, value=0).grid(row=1, column=3)
-		tk.Radiobutton(f, text='340N', var=self.ref, value=1).grid(row=1, column=4)
-		tk.Radiobutton(f, text='300N', var=self.ref, value=2).grid(row=1, column=5)
-		tk.Radiobutton(f, text='270N', var=self.ref, value=3).grid(row=1, column=6)
+		tk.Radiobutton(f, text='550N', var=self.ref, value=0).grid(row=1, column=3)
+		tk.Radiobutton(f, text='450N', var=self.ref, value=1).grid(row=1, column=4)
+		tk.Radiobutton(f, text='350N', var=self.ref, value=2).grid(row=1, column=5)
+		tk.Radiobutton(f, text='250N', var=self.ref, value=3).grid(row=1, column=6)
+		tk.Radiobutton(f, text='1:2,5', var=self.verhältnis, value=0).grid(row=2, column =3)
+		tk.Radiobutton(f, text='1:4', var=self.verhältnis, value=1).grid(row=2, column =4)
 		tk.Radiobutton(f, text='ohne Referenz', var=self.ref, value=4).grid(row=1, column=7)
 		self.ref.set(0)
+		self.verhältnis.set(0)
 		self.flag_update.set(0)
 		
 		self.samplecount = tk.Label(f, font=self.font, text='samples')
@@ -74,7 +78,7 @@ class Reader(tk.Frame):
 		self.recording = False
 		self.btn_start.config(state='normal')
 		self.btn_stop.config(state='disabled')
-		filename = os.path.join(self.pfad, self.fname.get()+'.tom'+str(self.ref.get()))
+		filename = os.path.join(self.pfad, self.fname.get()+'.tom'+str(self.ref.get())+str(self.verhältnis.get()))
 		np.savetxt(filename, self.data, fmt='%d')
 		self.data.clear()
 		self.samplecount['text'] = 'gespeichert'
@@ -104,7 +108,7 @@ class Reader(tk.Frame):
 def main(daten, callback, pfad):
 	root = tk.Tk()
 	app = Reader(daten, callback, pfad, master=root)
-	root.protocol("WM_DELETE_WINDOW", app.on_closing)
+	root.protocol("WM_DELETE_WINDOW", app.on_closing)g
 	app.mainloop()
 
 def open_reader_from_main(daten, callback, pfad):

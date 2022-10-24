@@ -13,7 +13,7 @@ def entspeichern():
     
 
 
-def fortschritt(endung, peak):
+def fortschritt(endung, peak, verhältnis):
   peak_list = []
   vorspannung_list =[]
   inzisur_list =[]
@@ -35,7 +35,7 @@ def fortschritt(endung, peak):
         print('Fehler:'+str(e))
         pass
       peak_list.append([name[0], (analyseData.peak[2]-peak)])
-      vorspannung_list.append([name[0], (analyseData.plateau[2]-(peak/4))])
+      vorspannung_list.append([name[0], (analyseData.plateau[2]-(peak/verhältnis))])
       inzisur_list.append([name[0], analyseData.dentDepth])
       time_list.append([name[0], (analyseData.time-150)])
   return peak_list, vorspannung_list, inzisur_list, time_list
@@ -88,26 +88,42 @@ def merge():
   time_list2=[]
   time_list3=[]
   try:
-    peak_list0, vorspannung_list0, inzisur_list0, time_list0 = fortschritt('tom0', 360)
+    peak_list0, vorspannung_list0, inzisur_list0, time_list0 = fortschritt('tom00', 550, 2.5)
   except:
       pass
   try:
-    peak_list1, vorspannung_list1, inzisur_list1, time_list1 = fortschritt('tom1', 330)
+    peak_list1, vorspannung_list1, inzisur_list1, time_list1 = fortschritt('tom10', 450, 2.5)
   except:
     pass
   try:
-    peak_list2, vorspannung_list2, inzisur_list2, time_list2 = fortschritt('tom2', 300)
+    peak_list2, vorspannung_list2, inzisur_list2, time_list2 = fortschritt('tom20', 350, 2.5)
   except:
     pass
   try:
-    peak_list3, vorspannung_list3, inzisur_list3, time_list3 = fortschritt('tom3', 270)
+    peak_list3, vorspannung_list3, inzisur_list3, time_list3 = fortschritt('tom30', 250, 2.5)
+  except:
+    pass
+  try:
+    peak_list01, vorspannung_list01, inzisur_list01, time_list01 = fortschritt('tom01', 550, 4)
+  except:
+      pass
+  try:
+    peak_list11, vorspannung_list11, inzisur_list11, time_list11 = fortschritt('tom11', 450, 4)
+  except:
+    pass
+  try:
+    peak_list21, vorspannung_list21, inzisur_list21, time_list21 = fortschritt('tom21', 350, 4)
+  except:
+    pass
+  try:
+    peak_list31, vorspannung_list31, inzisur_list31, time_list31 = fortschritt('tom31', 250, 4)
   except:
     pass
   
-  peak_fehler_list =sorted(peak_list0 + peak_list1 + peak_list2 + peak_list3)
-  vorspannung_fehler_list = sorted(vorspannung_list0 + vorspannung_list1 + vorspannung_list2 + vorspannung_list3)
-  inzisur_fehler_list = sorted(inzisur_list0 + inzisur_list1 + inzisur_list2 + inzisur_list3)
-  time_fehler_list = sorted(time_list0 + time_list1 + time_list2 + time_list3)
+  peak_fehler_list =sorted(peak_list0 + peak_list1 + peak_list2 + peak_list3 + peak_list01 + peak_list11 + peak_list31 + peak_list21)
+  vorspannung_fehler_list = sorted(vorspannung_list0 + vorspannung_list1 + vorspannung_list2 + vorspannung_list3 + vorspannung_list01 + vorspannung_list11 + vorspannung_list21 + vorspannung_list31)
+  inzisur_fehler_list = sorted(inzisur_list0 + inzisur_list1 + inzisur_list2 + inzisur_list3 + inzisur_list01 + inzisur_list11 + inzisur_list21 + inzisur_list31)
+  time_fehler_list = sorted(time_list0 + time_list1 + time_list2 + time_list3 + time_list01 + time_list11 + time_list21+ time_list31)
   return peak_fehler_list, vorspannung_fehler_list, inzisur_fehler_list, time_fehler_list
 
 def main():
