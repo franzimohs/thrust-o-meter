@@ -96,10 +96,13 @@ class ThrustOMeter():
                 vorspannung = 220
             if self.endung == 'tom10':
                 peak=450
+                vorspannung = 188
             if self.endung == 'tom20':
                 peak=350
+                vorspannung = 140
             if self.endung== 'tom30':
                 peak=250
+                vorspannung = 100
             if self.endung == 'tom01':
                 peak = 550
                 vorspannung = 138
